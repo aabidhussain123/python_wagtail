@@ -1,0 +1,13 @@
+{% extends "wagtailadmin/login.html" %}
+{% load wagtailsettings_tags wagtailimages_tags %}
+
+{% block branding_logo %}
+    {% get_settings %}
+    {% if settings.home.AdminBrandingSettings.logo_left %}
+        <div class="login-logo">
+            {% image settings.home.AdminBrandingSettings.logo_left max-250x100 class="custom-admin-logo-left" %}
+        </div>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}

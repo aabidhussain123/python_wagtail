@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="display-6 fw-bold border-bottom pb-2 mb-3">{{ page.title }}</h1>
+
+        {% if page.intro %}
+            <div class="fs-5 text-muted mb-4">{{ page.intro|richtext }}</div>
+        {% endif %}
+
+        {% if notice_pages %}
+            <div class="list-group shadow-sm">
+                {% for item in notice_pages %}
+                    <div class="list-group-item p-4 mb-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <span class="badge bg-danger-subtle text-danger"><i class="bi bi-bell-fill me-1"></i>Active Notice</span>
+                            <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>Posted: {{ item.date }}</small>
+                        </div>
+                        <h4 class="mb-3 fw-bold text-dark"><a href="{% pageurl item %}" class="text-decoration-none text-dark">{{ item.title }}</a></h4>
+                        
+                        {% if item.expiry_date %}
+                            <p class="text-danger small mb-3 fw-semibold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Valid Until: {{ item.expiry_date }}</p>
+                        {% endif %}
+                        
+                        <div class="text-muted mb-3">
+                            {{ item.body|richtext|truncatewords_html:30 }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% pageurl item %}" class="btn btn-sm btn-link px-0 text-primary fw-semibold">View Details <i class="bi bi-arrow-right"></i></a>
+                            {% if item.document %}
+                                <a href="{{ item.document.url }}" class="btn btn-outline-danger btn-sm" target="_blank">
+                                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download PDF ({{ item.document.title }})
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No notices active currently.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

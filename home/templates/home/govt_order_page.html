@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ page.get_parent.url }}">{{ page.get_parent.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="display-6 fw-bold text-dark mb-4">{{ page.title }}</h1>
+
+        <!-- Details Card -->
+        <div class="card border shadow-sm mb-4">
+            <div class="card-header bg-dark text-white fw-bold">
+                <i class="bi bi-file-earmark-text-fill me-2"></i>Order Specifications
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-semibold">Order/Notification Number:</div>
+                    <div class="col-sm-8 fw-bold text-dark">{{ page.order_number }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-semibold">Issue Date:</div>
+                    <div class="col-sm-8 text-dark">{{ page.order_date }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-semibold">Department:</div>
+                    <div class="col-sm-8"><span class="badge bg-primary fs-6">{{ page.get_department_display }}</span></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 text-muted fw-semibold">Subject / Description:</div>
+                    <div class="col-sm-8 text-dark text-wrap">{{ page.subject }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if page.document %}
+            <div class="card bg-light border-danger-subtle p-3 mb-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-1 fw-bold text-dark"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Official Document (PDF)</h6>
+                        <p class="mb-0 text-muted small">{{ page.document.title }}</p>
+                    </div>
+                    <a href="{{ page.document.url }}" class="btn btn-danger" target="_blank">
+                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download Order
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>No digital copy has been attached to this order.
+            </div>
+        {% endif %}
+
+        <div class="mt-5 pt-3 border-top">
+            <a href="{{ page.get_parent.url }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to {{ page.get_parent.title }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

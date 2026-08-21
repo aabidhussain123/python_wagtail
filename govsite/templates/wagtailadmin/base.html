@@ -1,0 +1,21 @@
+{% extends "wagtailadmin/base.html" %}
+{% load wagtailsettings_tags wagtailimages_tags %}
+
+{% block branding_logo %}
+    {% get_settings %}
+    {% if settings.home.AdminBrandingSettings.logo_left %}
+        {% image settings.home.AdminBrandingSettings.logo_left max-180x80 class="custom-admin-logo-left" %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block furniture %}
+    {% get_settings %}
+    {% if settings.home.AdminBrandingSettings.logo_right %}
+        <div class="custom-admin-logo-right-container">
+            {% image settings.home.AdminBrandingSettings.logo_right max-150x50 class="custom-admin-logo-right" %}
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

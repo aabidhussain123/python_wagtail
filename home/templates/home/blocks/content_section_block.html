@@ -1,0 +1,40 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="py-5 px-4 rounded border-0 {% if self.bg_color == 'light' %}bg-light border-light{% elif self.bg_color == 'primary-light' %}bg-info-subtle border-info-subtle{% else %}bg-transparent{% endif %} {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- Image Alignment Logic -->
+            {% if self.image %}
+                {% image self.image width-800 as img %}
+                {% if self.image_alignment == 'left' %}
+                    <div class="col-lg-5">
+                        <img src="{{ img.url }}" class="img-fluid rounded shadow" alt="{{ self.title|default:'Section Image' }}">
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            <div class="{% if self.image %}col-lg-7{% else %}col-12{% endif %}">
+                {% if self.title %}
+                    <h3 class="h3 fw-bold text-dark mb-3">{{ self.title }}</h3>
+                {% endif %}
+                <div class="lh-lg text-dark">
+                    {{ self.body }}
+                </div>
+            </div>
+            
+            {% if self.image and self.image_alignment == 'right' %}
+                <div class="col-lg-5">
+                    <img src="{{ img.url }}" class="img-fluid rounded shadow" alt="{{ self.title|default:'Section Image' }}">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+{% if self.custom_css %}
+<style>
+    {{ self.custom_css|safe }}
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-2">
+        {% if self.title %}
+            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4">{{ self.title }}</h3>
+        {% endif %}
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-{{ self.cards_in_row|default:'4'|add:'-1' }} row-cols-lg-{{ self.cards_in_row|default:'4' }} g-4">
+            {% for card in self.cards %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border border-light overflow-hidden">
+                        <!-- Image Container with Fixed Height -->
+                        {% if card.image %}
+                            <div class="card-img-wrapper" style="height: 180px; overflow: hidden; position: relative;">
+                                {% image card.image fill-400x300 class="card-img-top w-100 h-100" style="object-fit: cover;" alt=card.heading %}
+                            </div>
+                        {% else %}
+                            <div class="bg-secondary text-white text-center d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <i class="bi bi-card-image fs-1 opacity-25"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <!-- Heading with line clamping for uniform height -->
+                            <h5 class="card-title fw-bold mb-2" style="font-size: 1.05rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 3rem;">
+                                {% if card.link_page %}
+                                    <a href="{% pageurl card.link_page %}" class="text-dark text-decoration-none hover-primary">
+                                        {{ card.heading }}
+                                    </a>
+                                {% elif card.link_url %}
+                                    <a href="{{ card.link_url }}" class="text-dark text-decoration-none hover-primary" target="_blank" rel="noopener noreferrer">
+                                        {{ card.heading }}
+                                    </a>
+                                {% else %}
+                                    {{ card.heading }}
+                                {% endif %}
+                            </h5>
+                            
+                            <!-- Subheading with line clamping for uniform height -->
+                            {% if card.subheading %}
+                                <p class="card-text text-muted small flex-grow-1 mb-0" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 3.5rem;">
+                                    {{ card.subheading }}
+                                </p>
+                            {% else %}
+                                <div class="flex-grow-1" style="min-height: 3.5rem;"></div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Footer action link -->
+                        {% if card.link_page or card.link_url %}
+                            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                                {% if card.link_page %}
+                                    <a href="{% pageurl card.link_page %}" class="btn btn-sm btn-outline-primary w-100">Learn More</a>
+                                {% elif card.link_url %}
+                                    <a href="{{ card.link_url }}" class="btn btn-sm btn-outline-primary w-100" target="_blank" rel="noopener noreferrer">Learn More</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if self.custom_js %}
+<script>
+    (function() {
+        function init() {
+            {{ self.custom_js|safe }}
+        }
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init);
+        } else {
+            init();
+        }
+    })();
+</script>
+{% endif %}

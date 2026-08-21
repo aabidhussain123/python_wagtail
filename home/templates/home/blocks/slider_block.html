@@ -1,0 +1,56 @@
+{% load wagtailimages_tags %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="{{ self.container_width|default:'container-fluid' }}">
+        <div id="carousel-{{ block_id }}" class="carousel slide shadow rounded" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for slide in self.slides %}
+                    <button type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}"></button>
+                {% endfor %}
+            </div>
+            
+            <div class="carousel-inner rounded">
+                {% for slide in self.slides %}
+                    {% image slide.image fill-1200x500 as img %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" style="max-height: 500px;">
+                        {% if slide.link %}
+                            <a href="{{ slide.link.url }}">
+                                <img src="{{ img.url }}" class="d-block w-100" alt="{{ slide.title|default:'Slide' }}">
+                            </a>
+                        {% else %}
+                            <img src="{{ img.url }}" class="d-block w-100" alt="{{ slide.title|default:'Slide' }}">
+                        {% endif %}
+                        
+                        {% if slide.title or slide.subtitle %}
+                            <div class="carousel-caption d-none d-md-block" style="background: rgba(0, 51, 102, 0.75); border-radius: 8px; padding: 1.5rem;">
+                                {% if slide.title %}
+                                    <h5 class="fw-bold text-warning">{{ slide.title }}</h5>
+                                {% endif %}
+                                {% if slide.subtitle %}
+                                    <p class="mb-0 text-white-50">{{ slide.subtitle }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>

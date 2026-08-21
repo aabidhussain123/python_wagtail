@@ -1,0 +1,332 @@
+{% load static wagtailcore_tags wagtailimages_tags wagtailuserbar home_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            {% block title %}
+            {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+            {% endblock %}
+            {% block title_suffix %}
+            {% wagtail_site as current_site %}
+            {% if current_site and current_site.site_name %}- {{ current_site.site_name }}{% endif %}
+            {% endblock %}
+        </title>
+        {% if page.search_description %}
+        <meta name="description" content="{{ page.search_description }}" />
+        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {# Force all links in the live preview panel to be opened in a new tab #}
+        {% if request.in_preview_panel %}
+        <base target="_blank">
+        {% endif %}
+
+        {# Bootstrap 5 CSS CDN #}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        {# Bootstrap Icons #}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+        <style>
+            :root {
+                --gov-blue: #003366;
+                --gov-accent: #ff9933;
+                --gov-light: #f4f6f9;
+            }
+            body {
+                background-color: #fcfcfc;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            main {
+                flex: 1;
+            }
+            .gov-header {
+                background-color: var(--gov-blue);
+                color: white;
+                border-bottom: 4px solid var(--gov-accent);
+            }
+            .gov-header a {
+                color: white;
+                text-decoration: none;
+            }
+            .gov-footer {
+                background-color: #1a1a1a;
+                color: #ccc;
+                border-top: 4px solid var(--gov-accent);
+                padding: 2rem 0;
+                margin-top: 3rem;
+            }
+            .gov-footer a {
+                color: #fff;
+                text-decoration: none;
+            }
+            .gov-footer a:hover {
+                text-decoration: underline;
+            }
+            .navbar-dark .navbar-nav .nav-link {
+                color: rgba(255,255,255,0.85);
+            }
+            .navbar-dark .navbar-nav .nav-link:hover, 
+            .navbar-dark .navbar-nav .nav-link.active {
+                color: #fff;
+                border-bottom: 2px solid var(--gov-accent);
+            }
+            .badge-gov {
+                background-color: var(--gov-accent);
+                color: #000;
+                font-weight: 600;
+            }
+            .card-gov-order {
+                border-left: 5px solid var(--gov-blue);
+            }
+            /* Multi-level dropdown css */
+            .dropdown-menu .dropdown-toggle:after {
+                border-top: .3em solid transparent;
+                border-right: 0;
+                border-bottom: .3em solid transparent;
+                border-left: .3em solid;
+                margin-left: 0.5em;
+                vertical-align: middle;
+            }
+            .dropdown-submenu {
+                position: relative;
+            }
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+                margin-left: 0px;
+            }
+            /* Trigger dropright on hover for desktop screens */
+            @media (min-width: 992px) {
+                .navbar-nav .nav-item.dropdown:hover > .dropdown-menu {
+                    display: block;
+                }
+                .dropdown-submenu:hover > .dropdown-menu {
+                    display: block;
+                }
+            }
+        </style>
+
+        {% if settings.home.HeaderFooterSettings.additional_css %}
+        <style>
+            {{ settings.home.HeaderFooterSettings.additional_css|safe }}
+        </style>
+        {% endif %}
+
+        {% if settings.home.HeaderFooterSettings.header_css %}
+        <style>
+            {{ settings.home.HeaderFooterSettings.header_css|safe }}
+        </style>
+        {% endif %}
+
+        {% block extra_css %}
+        {% endblock %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        {% wagtailuserbar %}
+
+        <!-- Government Top Bar -->
+        <div class="py-1 px-3 bg-dark text-light small d-flex justify-content-between align-content-center">
+            <div>
+                <span class="me-2"><i class="bi bi-flag-fill text-warning"></i> Official Portal</span>
+            </div>
+            <div>
+                <a href="#main-content" class="text-light text-decoration-none me-3">Skip to main content</a>
+                <span class="text-secondary">|</span>
+                <span class="ms-3">A+</span> <span class="ms-2">A</span> <span class="ms-2">A-</span>
+            </div>
+        </div>
+
+        <!-- Main Gov Header -->
+        {% if settings.home.HeaderFooterSettings.custom_header_html %}
+            {{ settings.home.HeaderFooterSettings.custom_header_html|safe }}
+        {% else %}
+            <header class="gov-header py-3 shadow-sm">
+                <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <div class="d-flex align-items-center mb-3 mb-md-0">
+                        {% if settings.home.HeaderFooterSettings.logo %}
+                            {% image settings.home.HeaderFooterSettings.logo max-150x150 class="me-3" style="max-height: 80px; width: auto;" alt=settings.home.HeaderFooterSettings.site_title %}
+                        {% else %}
+                            <i class="bi bi-shield-shaded fs-1 me-3 text-warning"></i>
+                        {% endif %}
+                        <div>
+                            {% if settings.home.HeaderFooterSettings.site_title_line_1 or settings.home.HeaderFooterSettings.site_title_line_2 or settings.home.HeaderFooterSettings.site_title_line_3 or settings.home.HeaderFooterSettings.site_title_line_4 %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_1 %}
+                                    <div class="header-title-line-1" style="font-size: 1.05rem; font-weight: 500; opacity: 0.95;">{{ settings.home.HeaderFooterSettings.site_title_line_1 }}</div>
+                                {% endif %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_2 %}
+                                    <h1 class="h3 mb-0 fw-bold" style="font-size: 1.75rem; line-height: 1.25;"><a href="/">{{ settings.home.HeaderFooterSettings.site_title_line_2 }}</a></h1>
+                                {% endif %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_3 %}
+                                    <div class="header-title-line-3" style="font-size: 1.15rem; font-weight: 500; opacity: 0.95;">{{ settings.home.HeaderFooterSettings.site_title_line_3 }}</div>
+                                {% endif %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_4 %}
+                                    <div class="header-title-line-4 text-white-50" style="font-size: 0.85rem; margin-top: 3px; font-weight: normal;">{{ settings.home.HeaderFooterSettings.site_title_line_4 }}</div>
+                                {% endif %}
+                            {% else %}
+                                <h1 class="h3 mb-0 fw-bold"><a href="/">{{ settings.home.HeaderFooterSettings.site_title }}</a></h1>
+                                <p class="mb-0 text-white-50 small">{{ settings.home.HeaderFooterSettings.site_subtitle }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        {% if settings.home.HeaderFooterSettings.right_logo %}
+                            {% image settings.home.HeaderFooterSettings.right_logo max-150x150 style="max-height: 80px; width: auto;" alt="Right Site Logo" %}
+                        {% endif %}
+                        <!-- Search Bar in Header -->
+                        <form action="{% url 'search' %}" method="get" class="d-flex" role="search">
+                            <div class="input-group">
+                                <input class="form-control" type="search" placeholder="Search Portal..." aria-label="Search" name="query" {% if search_query %} value="{{ search_query }}"{% endif %}>
+                                <button class="btn btn-warning" type="submit"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </header>
+        {% endif %}
+
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top shadow-sm py-1">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#govNavbar" aria-controls="govNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="govNavbar">
+                    {% get_menu 'main' as main_menu %}
+                    {% if main_menu %}
+                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            {% for item in main_menu.menu_items.all %}
+                                {% if not item.parent %}
+                                    <!-- Level 1 Item -->
+                                    {% if item.children.exists %}
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle px-3" href="{{ item.url }}" id="menu-{{ item.id }}" role="button" data-bs-toggle="dropdown" aria-expanded="false" {% if item.open_in_new_tab %}target="_blank"{% endif %}>
+                                                {{ item.link_text }}
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="menu-{{ item.id }}">
+                                                {% for sub_item in item.children.all %}
+                                                    <!-- Level 2 Item -->
+                                                    {% if sub_item.children.exists %}
+                                                        <li class="dropdown-submenu">
+                                                            <a class="dropdown-item dropdown-toggle" href="{{ sub_item.url }}" {% if sub_item.open_in_new_tab %}target="_blank"{% endif %}>
+                                                                {{ sub_item.link_text }}
+                                                            </a>
+                                                            <ul class="dropdown-menu">
+                                                                {% for grand_sub_item in sub_item.children.all %}
+                                                                    <!-- Level 3 Item -->
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="{{ grand_sub_item.url }}" {% if grand_sub_item.open_in_new_tab %}target="_blank"{% endif %}>
+                                                                            {{ grand_sub_item.link_text }}
+                                                                        </a>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ sub_item.url }}" {% if sub_item.open_in_new_tab %}target="_blank"{% endif %}>
+                                                                {{ sub_item.link_text }}
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link px-3" href="{{ item.url }}" {% if item.open_in_new_tab %}target="_blank"{% endif %}>
+                                                {{ item.link_text }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <!-- Default Fallback Navbar if no menu is created yet -->
+                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="/"><i class="bi bi-house-door-fill"></i> Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="/news/">News</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="/notices/">Notices</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3" href="/govt-orders/">Government Orders</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        {% if settings.home.HeaderFooterSettings.custom_footer_html %}
+            {{ settings.home.HeaderFooterSettings.custom_footer_html|safe }}
+        {% else %}
+            <footer class="gov-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-white mb-3 fw-bold">
+                                {% if settings.home.HeaderFooterSettings.logo %}
+                                    {% image settings.home.HeaderFooterSettings.logo max-100x100 class="me-2" style="max-height: 30px; width: auto;" alt=settings.home.HeaderFooterSettings.footer_about_title %}
+                                {% else %}
+                                    <i class="bi bi-shield-shaded text-warning me-2"></i>
+                                {% endif %}
+                                {{ settings.home.HeaderFooterSettings.footer_about_title }}
+                            </h5>
+                            <p class="small text-white-50">{{ settings.home.HeaderFooterSettings.footer_about_text }}</p>
+                        </div>
+                        <div class="col-md-3 mb-4 mb-md-0">
+                            <h5 class="text-white mb-3">Quick Links</h5>
+                            <ul class="list-unstyled small">
+                                <li class="mb-2"><a href="/news/">Latest News</a></li>
+                                <li class="mb-2"><a href="/notices/">Official Notices</a></li>
+                                <li class="mb-2"><a href="/govt-orders/">Government Orders (GOs)</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h5 class="text-white mb-3">Help & Support</h5>
+                            <ul class="list-unstyled small text-white-50">
+                                <li class="mb-2"><i class="bi bi-geo-alt-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_address }}</li>
+                                <li class="mb-2"><i class="bi bi-envelope-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_email }}</li>
+                                <li class="mb-2"><i class="bi bi-telephone-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_phone }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="border-secondary my-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-white-50">
+                        <p class="mb-0">&copy; 2026 {{ settings.home.HeaderFooterSettings.copyright_text }}</p>
+                        <p class="mb-0">Powered by Wagtail CMS</p>
+                    </div>
+                </div>
+            </footer>
+        {% endif %}
+
+        {# Bootstrap 5 JS CDN Bundle #}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+        {% if settings.home.HeaderFooterSettings.header_js %}
+        <script>
+            {{ settings.home.HeaderFooterSettings.header_js|safe }}
+        </script>
+        {% endif %}
+
+        {% block extra_js %}
+        {% endblock %}
+    </body>
+</html>

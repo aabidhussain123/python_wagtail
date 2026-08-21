@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ page.get_parent.url }}">{{ page.get_parent.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="display-5 fw-bold text-dark mb-2">{{ page.title }}</h1>
+        
+        <div class="d-flex flex-wrap gap-3 text-muted mb-4 pb-3 border-bottom small">
+            <span><i class="bi bi-calendar3 me-1"></i>Date Published: {{ page.date }}</span>
+            {% if page.expiry_date %}
+                <span class="text-danger fw-semibold"><i class="bi bi-calendar-x me-1"></i>Expiry Date: {{ page.expiry_date }}</span>
+            {% endif %}
+        </div>
+
+        <div class="lh-lg text-dark mb-4">
+            {{ page.body|richtext }}
+        </div>
+
+        {% if page.document %}
+            <div class="card bg-light border-danger-subtle p-3 mb-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-1 fw-bold text-dark"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Official Attachment</h6>
+                        <p class="mb-0 text-muted small">{{ page.document.title }} (PDF)</p>
+                    </div>
+                    <a href="{{ page.document.url }}" class="btn btn-danger btn-sm" target="_blank">
+                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mt-5 pt-3 border-top">
+            <a href="{{ page.get_parent.url }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to {{ page.get_parent.title }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

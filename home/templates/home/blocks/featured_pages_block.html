@@ -1,0 +1,63 @@
+{% load wagtailimages_tags wagtailcore_tags %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-2">
+        {% if self.title %}
+            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4">{{ self.title }}</h3>
+        {% endif %}
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for card in self.cards %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border border-light">
+                        <!-- Image -->
+                        {% if card.custom_image %}
+                            {% image card.custom_image fill-800x450 class="card-img-top" alt=card.page.title %}
+                        {% elif card.page.specific.image %}
+                            {% image card.page.specific.image fill-800x450 class="card-img-top" alt=card.page.title %}
+                        {% else %}
+                            <div class="bg-secondary text-white text-center py-5 d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <i class="bi bi-link-45deg fs-1 opacity-25"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <!-- Title -->
+                            <h5 class="card-title fw-bold">
+                                <a href="{% pageurl card.page %}" class="text-dark text-decoration-none">
+                                    {{ card.custom_title|default:card.page.title }}
+                                </a>
+                            </h5>
+                            
+                            <!-- Description -->
+                            <p class="card-text text-muted small">
+                                {% if card.custom_description %}
+                                    {{ card.custom_description }}
+                                /
+                                {% elif card.page.search_description %}
+                                    {{ card.page.search_description }}
+                                {% elif card.page.specific.intro %}
+                                    {{ card.page.specific.intro }}
+                                {% else %}
+                                    Click to read more about this page.
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                            <a href="{% pageurl card.page %}" class="btn btn-sm btn-outline-primary w-100">Visit Page</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

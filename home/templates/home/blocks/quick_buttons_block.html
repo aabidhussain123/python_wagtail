@@ -1,0 +1,63 @@
+{% load wagtailcore_tags %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<style>
+    #block-{{ block_id }} .quick-button-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 180px;
+        padding: 12px 24px;
+        background: linear-gradient(180deg, #8b9698 0%, #5d6769 100%);
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.05rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        text-align: center;
+    }
+    #block-{{ block_id }} .quick-button-link:hover {
+        background: linear-gradient(180deg, #9bb0b0 0%, #687c7c 100%);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+    }
+    #block-{{ block_id }} .quick-button-link:active {
+        transform: translateY(0);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div id="block-{{ block_id }}" class="quick-buttons-section {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-3">
+        {% if self.title %}
+            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4 text-center">{{ self.title }}</h3>
+        {% endif %}
+        
+        <div class="d-flex flex-wrap justify-content-center gap-3 gap-md-4 py-2">
+            {% for item in self.buttons %}
+                {% if item.link_page %}
+                    <a href="{% pageurl item.link_page %}" class="quick-button-link">
+                {% elif item.link_url %}
+                    <a href="{{ item.link_url }}" class="quick-button-link" target="_blank" rel="noopener noreferrer">
+                {% else %}
+                    <a href="#" class="quick-button-link">
+                {% endif %}
+                    {{ item.text }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
