@@ -1,12 +1,13 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags home_tags %}
 
 {% block content %}
-    {% for block in page.body %}
-        {% if block.block_type == 'raw_html' %}
-            {{ block.value|safe }}
-        {% else %}
-            {% include_block block %}
-        {% endif %}
-    {% endfor %}
+    {% stream_blocks_at page.body 'before_heading' %}
+    {% stream_blocks_at page.body 'after_heading' %}
+    {% stream_blocks_at page.body 'in_stream' %}
+    {% stream_blocks_at page.body 'after_main_content' %}
+{% endblock %}
+
+{% block above_footer %}
+{% stream_blocks_at page.body 'above_footer' %}
 {% endblock %}

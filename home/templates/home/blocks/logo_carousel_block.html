@@ -1,0 +1,207 @@
+{% load wagtailimages_tags wagtailcore_tags home_tags %}
+{% unique_id as block_id %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+{% if self.custom_css %}
+<style>
+    {{ self.custom_css|safe }}
+</style>
+{% endif %}
+
+<style>
+    #block-{{ block_id }} .logo-track::-webkit-scrollbar {
+        display: none;
+    }
+    #block-{{ block_id }} .logo-track {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        flex: 1;
+        min-width: 0;
+    }
+    #block-{{ block_id }} .logo-item {
+        flex: 0 0 auto;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+    #block-{{ block_id }} .logo-item img {
+        max-height: 55px;
+        width: auto;
+        object-fit: contain;
+        filter: grayscale(10%) contrast(90%);
+        transition: filter 0.3s ease, transform 0.3s ease;
+    }
+    #block-{{ block_id }} .logo-item:hover img {
+        filter: grayscale(0%) contrast(100%);
+        transform: scale(1.05);
+    }
+    #block-{{ block_id }} .logo-nav-btn {
+        background: none;
+        border: none;
+        color: #b30000;
+        font-size: 2.2rem;
+        cursor: pointer;
+        padding: 0 15px;
+        transition: color 0.2s, transform 0.2s;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #block-{{ block_id }} .logo-nav-btn:hover {
+        color: #e60000;
+        transform: scale(1.15);
+    }
+    #block-{{ block_id }} .logo-nav-btn:focus {
+        outline: none;
+    }
+</style>
+
+<div id="block-{{ block_id }}" class="logo-carousel-section bg-white border-top border-bottom py-4 {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container position-relative">
+        {% if self.title %}
+            <h3 class="h4 fw-bold text-dark text-center mb-4">{{ self.title }}</h3>
+        {% endif %}
+        
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Left Arrow (Red Triangle) -->
+            <button id="prev-{{ block_id }}" class="logo-nav-btn" aria-label="Scroll left">
+                <i class="bi bi-caret-left-fill"></i>
+            </button>
+            
+            <!-- Scrollable Track -->
+            <div id="track-{{ block_id }}" class="logo-track d-flex overflow-x-auto scroll-smooth align-items-center gap-4 gap-md-5 py-2" style="scroll-behavior: smooth;">
+                {% for item in self.logos %}
+                    <div class="logo-item">
+                        {% if item.link_page %}
+                            <a href="{% pageurl item.link_page %}" title="{{ item.title|default:'' }}">
+                        {% elif item.link_url %}
+                            <a href="{{ item.link_url }}" target="_blank" rel="noopener noreferrer" title="{{ item.title|default:'' }}">
+                        {% endif %}
+                        
+                        {% image item.image max-220x70 class="img-fluid" alt=item.title|default:"Partner Logo" %}
+                        
+                        {% if item.link_page or item.link_url %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Right Arrow (Red Triangle) -->
+            <button id="next-{{ block_id }}" class="logo-nav-btn" aria-label="Scroll right">
+                <i class="bi bi-caret-right-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function init() {
+            const track = document.getElementById("track-{{ block_id }}");
+            const prev = document.getElementById("prev-{{ block_id }}");
+            const next = document.getElementById("next-{{ block_id }}");
+            
+            if (track && prev && next) {
+                prev.addEventListener("click", function() {
+                    track.scrollBy({ left: -260, behavior: "smooth" });
+                });
+                
+                next.addEventListener("click", function() {
+                    track.scrollBy({ left: 260, behavior: "smooth" });
+                });
+                
+                function updateNavButtons() {
+                    const hasOverflow = track.scrollWidth > track.clientWidth;
+                    if (hasOverflow) {
+                        prev.style.display = "flex";
+                        next.style.display = "flex";
+                    } else {
+                        prev.style.display = "none";
+                        next.style.display = "none";
+                    }
+                }
+                
+                // Check on DOM load, window load, resize, and image loading triggers
+                updateNavButtons();
+                window.addEventListener("load", updateNavButtons);
+                window.addEventListener("resize", updateNavButtons);
+                
+                // Re-evaluate when each image is fully loaded to prevent race conditions
+                track.querySelectorAll("img").forEach(img => {
+                    if (img.complete) {
+                        updateNavButtons();
+                    } else {
+                        img.addEventListener("load", updateNavButtons);
+                    }
+                });
+
+                // Auto Scroll / Autoplay
+                let autoScrollInterval = null;
+                function startAutoScroll() {
+                    stopAutoScroll();
+                    autoScrollInterval = setInterval(function() {
+                        const maxScrollLeft = track.scrollWidth - track.clientWidth;
+                        if (track.scrollLeft >= maxScrollLeft - 10) {
+                            track.scrollTo({ left: 0, behavior: "smooth" });
+                        } else {
+                            track.scrollBy({ left: 260, behavior: "smooth" });
+                        }
+                    }, 3500); // Auto-scroll every 3.5 seconds
+                }
+                
+                function stopAutoScroll() {
+                    if (autoScrollInterval) {
+                        clearInterval(autoScrollInterval);
+                        autoScrollInterval = null;
+                    }
+                }
+                
+                function handleAutoplay() {
+                    const hasOverflow = track.scrollWidth > track.clientWidth;
+                    if (hasOverflow) {
+                        startAutoScroll();
+                    } else {
+                        stopAutoScroll();
+                    }
+                }
+                
+                // Initialize autoplay check
+                setTimeout(handleAutoplay, 500);
+                window.addEventListener("load", handleAutoplay);
+                window.addEventListener("resize", handleAutoplay);
+                
+                // Pause auto-scroll on hover
+                track.addEventListener("mouseenter", stopAutoScroll);
+                track.addEventListener("mouseleave", handleAutoplay);
+                prev.addEventListener("mouseenter", stopAutoScroll);
+                prev.addEventListener("mouseleave", handleAutoplay);
+                next.addEventListener("mouseenter", stopAutoScroll);
+                next.addEventListener("mouseleave", handleAutoplay);
+                
+                const observer = new MutationObserver(updateNavButtons);
+                observer.observe(track, { childList: true, subtree: true });
+            }
+            
+            {% if self.custom_js %}
+                {{ self.custom_js|safe }}
+            {% endif %}
+        }
+        
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init);
+        } else {
+            init();
+        }
+    })();
+</script>

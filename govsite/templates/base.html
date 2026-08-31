@@ -149,11 +149,13 @@
             <header class="gov-header py-3 shadow-sm">
                 <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
                     <div class="d-flex align-items-center mb-3 mb-md-0">
-                        {% if settings.home.HeaderFooterSettings.logo %}
-                            {% image settings.home.HeaderFooterSettings.logo max-150x150 class="me-3" style="max-height: 80px; width: auto;" alt=settings.home.HeaderFooterSettings.site_title %}
-                        {% else %}
-                            <i class="bi bi-shield-shaded fs-1 me-3 text-warning"></i>
-                        {% endif %}
+                        <a href="/" class="d-inline-block text-decoration-none">
+                            {% if settings.home.HeaderFooterSettings.logo %}
+                                {% image settings.home.HeaderFooterSettings.logo max-150x150 class="me-3" style="max-height: 80px; width: auto;" alt=settings.home.HeaderFooterSettings.site_title %}
+                            {% else %}
+                                <i class="bi bi-shield-shaded fs-1 me-3 text-warning"></i>
+                            {% endif %}
+                        </a>
                         <div>
                             {% if settings.home.HeaderFooterSettings.site_title_line_1 or settings.home.HeaderFooterSettings.site_title_line_2 or settings.home.HeaderFooterSettings.site_title_line_3 or settings.home.HeaderFooterSettings.site_title_line_4 %}
                                 {% if settings.home.HeaderFooterSettings.site_title_line_1 %}
@@ -270,8 +272,26 @@
 
         <!-- Main Content Area -->
         <main id="main-content">
+            {% if page and page.depth > 3 %}
+                <div class="container pt-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 bg-transparent p-0">
+                            {% for ancestor in page.get_ancestors %}
+                                {% if ancestor.depth > 2 %}
+                                    <li class="breadcrumb-item"><a href="{% pageurl ancestor %}" class="text-decoration-none">{{ ancestor.title }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            {% endif %}
+
             {% block content %}{% endblock %}
         </main>
+
+        <!-- Blocks marked "Render Below Content" appear here, just above footer -->
+        {% block above_footer %}{% endblock %}
 
         <!-- Footer -->
         {% if settings.home.HeaderFooterSettings.custom_footer_html %}

@@ -1,0 +1,91 @@
+{% load wagtailcore_tags home_tags %}
+{% unique_id as block_id %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="py-4 {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container">
+        {% if self.title %}
+            <h2 class="h3 fw-bold border-bottom pb-2 mb-4">{{ self.title }}</h2>
+        {% endif %}
+
+        {% if self.show_filters %}
+            <!-- Filter and Search Form -->
+            <div class="card bg-light border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-funnel-fill me-2 text-primary"></i>Filter Government Orders</h5>
+                <form method="get" action="." class="row g-3">
+                    <div class="col-md-5">
+                        <label for="department-{{ block_id }}" class="form-label small fw-semibold text-secondary">Department</label>
+                        <select id="department-{{ block_id }}" name="department" class="form-select">
+                            <option value="">-- All Departments --</option>
+                            {% for code, name in departments %}
+                                <option value="{{ code }}" {% if selected_dept == code %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="searchQuery-{{ block_id }}" class="form-label small fw-semibold text-secondary">Search Order Number / Subject</label>
+                        <input type="text" id="searchQuery-{{ block_id }}" name="q" value="{{ q }}" class="form-control" placeholder="e.g. Finance-2026-05">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Search</button>
+                    </div>
+                </form>
+                {% if selected_dept or q %}
+                    <div class="mt-3">
+                        <a href="." class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-circle me-1"></i>Clear Filters</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Orders Table -->
+        {% if orders %}
+            <div class="table-responsive shadow-sm rounded border bg-white">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="width: 18%;">Order Number</th>
+                            <th scope="col" style="width: 15%;">Issue Date</th>
+                            <th scope="col" style="width: 25%;">Department</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col" style="width: 12%;">Attachment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ order.order_number }}</td>
+                                <td>{{ order.order_date }}</td>
+                                <td><span class="badge bg-secondary">{{ order.get_department_display }}</span></td>
+                                <td>
+                                    <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" {% if order.document %}target="_blank"{% endif %} class="text-dark fw-bold text-decoration-none hover-primary">{{ order.title }}</a>
+                                    <div class="text-muted small text-span" style="max-width: 500px;">{{ order.subject }}</div>
+                                </td>
+                                <td>
+                                    {% if order.document %}
+                                        <a href="{{ order.document.url }}" class="btn btn-danger btn-sm w-100" target="_blank">
+                                            <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>PDF
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted small">No File</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>No government orders found matching the filter criteria.
+            </div>
+        {% endif %}
+    </div>
+</div>

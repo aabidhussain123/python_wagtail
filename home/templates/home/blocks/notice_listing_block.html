@@ -1,0 +1,55 @@
+{% load wagtailcore_tags home_tags %}
+{% unique_id as block_id %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<div id="block-{{ block_id }}" class="py-4 {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container">
+        {% if self.title %}
+            <h2 class="h3 fw-bold border-bottom pb-2 mb-4">{{ self.title }}</h2>
+        {% endif %}
+
+        {% if notice_pages %}
+            <div class="list-group shadow-sm">
+                {% for item in notice_pages %}
+                    <div class="list-group-item p-4 mb-3 border rounded shadow-sm bg-white">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <span class="badge bg-danger-subtle text-danger"><i class="bi bi-bell-fill me-1"></i>Active Notice</span>
+                            <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>Posted: {{ item.date }}</small>
+                        </div>
+                        <h4 class="mb-3 fw-bold text-dark">
+                            <a href="{% if item.document %}{{ item.document.url }}{% else %}{% pageurl item %}{% endif %}" {% if item.document %}target="_blank"{% endif %} class="text-decoration-none text-dark hover-primary">{{ item.title }}</a>
+                        </h4>
+                        
+                        {% if item.expiry_date %}
+                            <p class="text-danger small mb-3 fw-semibold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Valid Until: {{ item.expiry_date }}</p>
+                        {% endif %}
+                        
+                        <div class="text-muted mb-3">
+                            {{ item.body|richtext|truncatewords_html:30 }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% if item.document %}{{ item.document.url }}{% else %}{% pageurl item %}{% endif %}" {% if item.document %}target="_blank"{% endif %} class="btn btn-sm btn-link px-0 text-primary fw-semibold">
+                                {% if item.document %}View PDF <i class="bi bi-file-earmark-pdf"></i>{% else %}View Details <i class="bi bi-arrow-right"></i>{% endif %}
+                            </a>
+                            {% if item.document %}
+                                <a href="{{ item.document.url }}" class="btn btn-outline-danger btn-sm" target="_blank">
+                                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download PDF ({{ item.document.title }})
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No notices active currently.</p>
+        {% endif %}
+    </div>
+</div>

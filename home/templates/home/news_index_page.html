@@ -1,22 +1,21 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags home_tags %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
-            </ol>
-        </nav>
+    {% stream_blocks_at page.body 'before_heading' %}
 
+    <div class="container py-4">
         <h1 class="display-6 fw-bold border-bottom pb-2 mb-3">{{ page.title }}</h1>
-        
+
         {% if page.intro %}
             <div class="fs-5 text-muted mb-4">{{ page.intro|richtext }}</div>
         {% endif %}
 
+        {% stream_blocks_at page.body 'after_heading' %}
+    </div>
+
+    <!-- News Listing Section -->
+    <div class="container mb-5">
         {% if news_pages %}
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {% for item in news_pages %}
@@ -31,11 +30,17 @@
                             {% endif %}
                             <div class="card-body">
                                 <div class="text-muted small mb-2"><i class="bi bi-calendar3 me-1"></i>{{ item.date }}</div>
-                                <h5 class="card-title fw-bold"><a href="{% pageurl item %}" class="text-dark text-decoration-none">{{ item.title }}</a></h5>
+                                <h5 class="card-title fw-bold">
+                                    <a href="{% if item.document %}{{ item.document.url }}{% else %}{% pageurl item %}{% endif %}" {% if item.document %}target="_blank"{% endif %} class="text-dark text-decoration-none hover-primary">
+                                        {{ item.title }}
+                                    </a>
+                                </h5>
                                 <p class="card-text text-muted small">{{ item.intro }}</p>
                             </div>
                             <div class="card-footer bg-transparent border-0 pt-0">
-                                <a href="{% pageurl item %}" class="btn btn-sm btn-outline-primary w-100">Read Article</a>
+                                <a href="{% if item.document %}{{ item.document.url }}{% else %}{% pageurl item %}{% endif %}" {% if item.document %}target="_blank"{% endif %} class="btn btn-sm btn-outline-primary w-100">
+                                    {% if item.document %}Open PDF{% else %}Read Article{% endif %}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -45,5 +50,11 @@
             <p class="text-muted">No news articles found.</p>
         {% endif %}
     </div>
-</div>
+
+    {% stream_blocks_at page.body 'after_main_content' %}
+    {% stream_blocks_at page.body 'in_stream' %}
+{% endblock %}
+
+{% block above_footer %}
+{% stream_blocks_at page.body 'above_footer' %}
 {% endblock %}

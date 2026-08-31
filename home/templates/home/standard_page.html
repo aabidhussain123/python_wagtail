@@ -1,27 +1,23 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags home_tags %}
 
 {% block content %}
+{% stream_blocks_at page.body 'before_heading' %}
 <div class="row">
     <div class="col-lg-8 mx-auto">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
-            </ol>
-        </nav>
-
         <h1 class="display-6 fw-bold border-bottom pb-2 mb-4">{{ page.title }}</h1>
 
+        {% stream_blocks_at page.body 'after_heading' %}
+
         <div class="lh-lg text-dark">
-            {% for block in page.body %}
-                {% if block.block_type == 'raw_html' %}
-                    {{ block.value|safe }}
-                {% else %}
-                    {% include_block block %}
-                {% endif %}
-            {% endfor %}
+            {% stream_blocks_at page.body 'in_stream' %}
         </div>
+
+        {% stream_blocks_at page.body 'after_main_content' %}
     </div>
 </div>
+{% endblock %}
+
+{% block above_footer %}
+{% stream_blocks_at page.body 'above_footer' %}
 {% endblock %}

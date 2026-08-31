@@ -4,14 +4,6 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-8 mx-auto">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ page.get_parent.url }}">{{ page.get_parent.title }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
-            </ol>
-        </nav>
-
         <h1 class="display-5 fw-bold text-dark mb-2">{{ page.title }}</h1>
         <div class="text-muted d-flex align-items-center mb-4 pb-3 border-bottom">
             <span class="me-3"><i class="bi bi-calendar3 me-1"></i>Published: {{ page.date }}</span>

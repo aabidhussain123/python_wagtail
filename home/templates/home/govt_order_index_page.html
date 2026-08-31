@@ -1,21 +1,17 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+{% load wagtailcore_tags home_tags %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
-            </ol>
-        </nav>
+    {% stream_blocks_at page.body 'before_heading' %}
 
+    <div class="container py-4">
         <h1 class="display-6 fw-bold border-bottom pb-2 mb-3">{{ page.title }}</h1>
 
         {% if page.intro %}
             <div class="fs-5 text-muted mb-4">{{ page.intro|richtext }}</div>
         {% endif %}
+
+        {% stream_blocks_at page.body 'after_heading' %}
 
         <!-- Filter and Search Form -->
         <div class="card bg-light border-0 shadow-sm p-4 mb-4">
@@ -65,7 +61,7 @@
                                 <td>{{ order.order_date }}</td>
                                 <td><span class="badge bg-secondary">{{ order.get_department_display }}</span></td>
                                 <td>
-                                    <a href="{% pageurl order %}" class="text-dark fw-bold text-decoration-none">{{ order.title }}</a>
+                                    <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" {% if order.document %}target="_blank"{% endif %} class="text-dark fw-bold text-decoration-none hover-primary">{{ order.title }}</a>
                                     <div class="text-muted small text-truncate" style="max-width: 500px;">{{ order.subject }}</div>
                                 </td>
                                 <td>
@@ -88,5 +84,11 @@
             </div>
         {% endif %}
     </div>
-</div>
+
+    {% stream_blocks_at page.body 'after_main_content' %}
+    {% stream_blocks_at page.body 'in_stream' %}
+{% endblock %}
+
+{% block above_footer %}
+{% stream_blocks_at page.body 'above_footer' %}
 {% endblock %}

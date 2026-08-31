@@ -5,15 +5,35 @@ from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.search import index
 from wagtail import blocks
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.snippets.models import register_snippet
 from modelcluster.models import ClusterableModel
 from modelcluster.fields import ParentalKey
+from wagtail.snippets.blocks import SnippetChooserBlock
 
 
 # --- PAGE BUILDER WIDGET BLOCKS ---
 
 class BlockStyleStructBlock(blocks.StructBlock):
+    placement = blocks.ChoiceBlock(
+        choices=[
+            ('in_stream', 'In page builder order (default)'),
+            ('before_heading', 'Top of page (before page title)'),
+            ('after_heading', 'After page heading (before dynamic content)'),
+            ('after_main_content', 'After main / dynamic content'),
+            ('above_footer', 'Above footer'),
+        ],
+        default='in_stream',
+        required=False,
+        label='Display Position',
+        help_text=(
+            'Where to show THIS section only. Other sections keep their own positions. '
+            'On listing pages (Govt Orders, News, Notices, RTI, ROP): '
+            '"After page heading" puts it above the dynamic list; '
+            '"In page builder order" keeps it below the list with other builder blocks.'
+        ),
+    )
     margin_top = blocks.ChoiceBlock(choices=[
         ('mt-0', 'None'),
         ('mt-2', 'Small'),
@@ -40,6 +60,12 @@ class BlockStyleStructBlock(blocks.StructBlock):
     ], default='pb-0', label="Padding Bottom")
     custom_class = blocks.CharBlock(required=False, label="Custom CSS Class Name", help_text="Add custom CSS class name for styling")
     custom_css = blocks.TextBlock(required=False, label="Custom CSS Styles", help_text="Write custom CSS properties here (e.g. background-color: red; color: white;)")
+    render_below_content = blocks.BooleanBlock(
+        required=False,
+        default=False,
+        label="(Legacy) Render Below Page Content",
+        help_text="Deprecated — use Display Position → Above footer instead.",
+    )
 
 
 class SlideBlock(blocks.StructBlock):
@@ -55,7 +81,7 @@ class SliderBlock(blocks.StructBlock):
         ('container', 'Boxed Width (container)'),
         ('container-fluid', 'Full Width (container-fluid)'),
     ], default='container-fluid', label="Container Width", help_text="Choose whether the slider should be full width or boxed width.")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/slider_block.html'
@@ -64,12 +90,12 @@ class SliderBlock(blocks.StructBlock):
 
 
 class HeroBlock(blocks.StructBlock):
-    title = blocks.CharBlock(required=True)
+    title = blocks.CharBlock(required=False)
     subtitle = blocks.TextBlock(required=False)
     background_image = ImageChooserBlock(required=False)
     cta_text = blocks.CharBlock(required=False, label="CTA Button Text")
     cta_link = blocks.PageChooserBlock(required=False, label="CTA Link Page")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/hero_block.html'
@@ -87,7 +113,7 @@ class FeaturedPageCardBlock(blocks.StructBlock):
 class FeaturedPagesBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, help_text="Header for this sections grid")
     cards = blocks.ListBlock(FeaturedPageCardBlock(), label="Pages Grid Cards")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/featured_pages_block.html'
@@ -118,7 +144,7 @@ class FeaturedCardsBlock(blocks.StructBlock):
     ], default='4', label="Cards in a Row", help_text="Select number of cards to display in a row on large screens")
     custom_css = blocks.TextBlock(required=False, label="Custom CSS for Section", help_text="Write custom CSS rules specifically for this section.")
     custom_js = blocks.TextBlock(required=False, label="Custom JS for Section", help_text="Write custom JavaScript behaviors for this section.")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/featured_cards_block.html'
@@ -139,7 +165,7 @@ class ContentSectionBlock(blocks.StructBlock):
         ('light', 'Light Gray Background'),
         ('primary-light', 'Light Blue Background')
     ], default='white')
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/content_section_block.html'
@@ -152,14 +178,17 @@ class NewsNoticeLatestBlock(blocks.StructBlock):
     news_count = blocks.IntegerBlock(default=3, min_value=1, max_value=10, label="Number of News Items")
     notice_count = blocks.IntegerBlock(default=5, min_value=1, max_value=10, label="Number of Notices")
     govt_order_count = blocks.IntegerBlock(default=5, min_value=1, max_value=10, label="Number of Government Orders")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context=parent_context)
-        from home.models import NewsPage, NoticePage, GovtOrderPage
+        from home.models import NewsPage, NoticePage, GovtOrderPage, NewsIndexPage, NoticeIndexPage, GovtOrderIndexPage
         context['news_pages'] = NewsPage.objects.live().public().order_by('-date')[:value.get('news_count', 3)]
         context['notice_pages'] = NoticePage.objects.live().public().order_by('-date')[:value.get('notice_count', 5)]
         context['govt_orders'] = GovtOrderPage.objects.live().public().order_by('-order_date')[:value.get('govt_order_count', 5)]
+        context['news_index'] = NewsIndexPage.objects.live().public().first()
+        context['notice_index'] = NoticeIndexPage.objects.live().public().first()
+        context['govt_order_index'] = GovtOrderIndexPage.objects.live().public().first()
         return context
 
     class Meta:
@@ -184,7 +213,7 @@ class QuickLinkItemBlock(blocks.StructBlock):
 class QuickLinksCarouselBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, label="Section Title", help_text="Optional title for this section")
     links = blocks.ListBlock(QuickLinkItemBlock(), label="Quick Links List")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/quick_links_carousel_block.html'
@@ -201,12 +230,226 @@ class QuickButtonItemBlock(blocks.StructBlock):
 class QuickButtonsBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=False, label="Section Title", help_text="Optional title for this section")
     buttons = blocks.ListBlock(QuickButtonItemBlock(), label="Buttons List")
-    style = BlockStyleStructBlock(label="Advanced Styling Settings", required=False)
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
         template = 'home/blocks/quick_buttons_block.html'
         icon = 'link'
         label = 'Quick Buttons Row'
+
+
+class PdfBannerItemBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True, label="Banner Image", help_text="Upload/Select the banner image")
+    document = DocumentChooserBlock(required=True, label="PDF Document", help_text="Upload/Select the PDF document to open when clicked")
+    caption = blocks.CharBlock(required=False, label="Caption/Title", help_text="Optional text title/caption for screen readers or hover display")
+
+
+class PdfBannersBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, label="Section Title", help_text="Optional section header title")
+    banners = blocks.ListBlock(PdfBannerItemBlock(), label="PDF Banners")
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    class Meta:
+        template = 'home/blocks/pdf_banners_block.html'
+        icon = 'doc-full'
+        label = 'PDF Banners Grid'
+
+
+class LogoItemBlock(blocks.StructBlock):
+    image = ImageChooserBlock(required=True, label="Logo Image", help_text="Upload/Select the logo image")
+    link_url = blocks.URLBlock(required=False, label="External URL Link", help_text="Optional external link URL")
+    link_page = blocks.PageChooserBlock(required=False, label="Internal Page Link", help_text="Or select an internal page to link to")
+    title = blocks.CharBlock(required=False, label="Logo Title", help_text="Title / alt text for the logo")
+
+
+class LogoCarouselBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, label="Section Title", help_text="Optional title for this section")
+    logos = blocks.ListBlock(LogoItemBlock(), label="Logos List")
+    custom_css = blocks.TextBlock(required=False, label="Custom CSS for Section", help_text="Write custom CSS rules specifically for this section.")
+    custom_js = blocks.TextBlock(required=False, label="Custom JS for Section", help_text="Write custom JavaScript behaviors for this section.")
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    class Meta:
+        template = 'home/blocks/logo_carousel_block.html'
+        icon = 'image'
+        label = 'Logo Carousel Slider'
+
+
+class SharedLogoSliderBlock(blocks.StructBlock):
+    logo_slider = SnippetChooserBlock('home.LogoSlider', label="Select Logo Slider")
+    # Legacy top-level placement (kept for existing pages). Prefer style.placement.
+    placement = blocks.ChoiceBlock(
+        choices=[
+            ('in_stream', 'In page builder order (default)'),
+            ('before_heading', 'Top of page (before page title)'),
+            ('after_heading', 'After page heading (before dynamic content)'),
+            ('after_main_content', 'After main / dynamic content'),
+            ('above_footer', 'Above footer'),
+        ],
+        default='in_stream',
+        required=False,
+        label='Display Position (legacy)',
+        help_text='Prefer Display Position under Advanced Styling Settings. Kept for older pages.',
+    )
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    class Meta:
+        template = 'home/blocks/shared_logo_slider_block.html'
+        icon = 'image'
+        label = 'Shared Logo Slider'
+
+
+class SharedQuickLinksCarouselBlock(blocks.StructBlock):
+    quick_links = SnippetChooserBlock(
+        'home.QuickLinksCarousel',
+        required=True,
+        label="Select Quick Links Carousel",
+        help_text=(
+            "Choose a Quick Links Carousel from the admin sidebar "
+            "(Quick Links Carousel). Create/edit the circle links there once, "
+            "then reuse this block on any page."
+        ),
+    )
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    class Meta:
+        template = 'home/blocks/shared_quick_links_carousel_block.html'
+        icon = 'link'
+        label = 'Shared Quick Links Carousel'
+
+
+
+class NewsListingBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, default="Latest News", help_text="Section Title")
+    news_count = blocks.IntegerBlock(default=6, min_value=1, max_value=24, label="Number of News Items")
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from home.models import NewsPage, NewsIndexPage
+        context['news_pages'] = NewsPage.objects.live().public().order_by('-date')[:value.get('news_count', 6)]
+        context['news_index'] = NewsIndexPage.objects.live().public().first()
+        return context
+
+    class Meta:
+        template = 'home/blocks/news_listing_block.html'
+        icon = 'list-ul'
+        label = 'News Listing Section'
+
+
+class NoticeListingBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, default="Official Notices", help_text="Section Title")
+    notice_count = blocks.IntegerBlock(default=5, min_value=1, max_value=25, label="Number of Notices")
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from home.models import NoticePage, NoticeIndexPage
+        context['notice_pages'] = NoticePage.objects.live().public().order_by('-date')[:value.get('notice_count', 5)]
+        context['notice_index'] = NoticeIndexPage.objects.live().public().first()
+        return context
+
+    class Meta:
+        template = 'home/blocks/notice_listing_block.html'
+        icon = 'list-ul'
+        label = 'Notice Listing Section'
+
+
+class GovtOrderListingBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=False, default="Government Orders", help_text="Section Title")
+    order_count = blocks.IntegerBlock(default=10, min_value=1, max_value=50, label="Number of Orders")
+    show_filters = blocks.BooleanBlock(default=True, required=False, label="Show Search and Department Filters")
+    style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        from home.models import GovtOrderPage, GovtOrderIndexPage
+        orders = GovtOrderPage.objects.live().public().order_by('-order_date')
+
+        request = parent_context.get('request') if parent_context else None
+        dept = ""
+        q = ""
+        if request:
+            dept = request.GET.get('department', '')
+            if dept:
+                orders = orders.filter(department=dept)
+
+            q = request.GET.get('q', '')
+            if q:
+                orders = orders.filter(
+                    models.Q(title__icontains=q) |
+                    models.Q(order_number__icontains=q) |
+                    models.Q(subject__icontains=q)
+                )
+
+        context['orders'] = orders[:value.get('order_count', 10)]
+        context['departments'] = GovtOrderPage.DEPARTMENT_CHOICES
+        context['selected_dept'] = dept
+        context['q'] = q
+        context['govt_order_index'] = GovtOrderIndexPage.objects.live().public().first()
+        return context
+
+    class Meta:
+        template = 'home/blocks/govt_order_listing_block.html'
+        icon = 'list-ul'
+        label = 'Government Orders Listing Section'
+
+
+class HomePdfBannersBlock(blocks.StructBlock):
+    style = BlockStyleStructBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        homepage = HomePage.objects.live().public().first()
+        if homepage:
+            for block in homepage.body:
+                if block.block_type == 'pdf_banners':
+                    context['shared_value'] = block.value
+                    break
+        return context
+
+    class Meta:
+        template = 'home/blocks/home_pdf_banners_block.html'
+        icon = 'image'
+        label = 'Shared Homepage PDF Banners Grid'
+
+
+class HomeLogoCarouselBlock(blocks.StructBlock):
+    style = BlockStyleStructBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        homepage = HomePage.objects.live().public().first()
+        if homepage:
+            for block in homepage.body:
+                if block.block_type == 'logo_carousel':
+                    context['shared_value'] = block.value
+                    break
+        return context
+
+    class Meta:
+        template = 'home/blocks/home_logo_carousel_block.html'
+        icon = 'image'
+        label = 'Shared Homepage Logo Carousel'
+
+
+class HomeQuickLinksCarouselBlock(blocks.StructBlock):
+    style = BlockStyleStructBlock(required=False)
+
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context=parent_context)
+        homepage = HomePage.objects.live().public().first()
+        if homepage:
+            for block in homepage.body:
+                if block.block_type == 'quick_links_carousel':
+                    context['shared_value'] = block.value
+                    break
+        return context
+
+    class Meta:
+        template = 'home/blocks/home_quick_links_carousel_block.html'
+        icon = 'link'
+        label = 'Shared Homepage Quick Links Carousel'
 
 
 PAGE_BUILDER_BLOCKS = [
@@ -216,10 +459,20 @@ PAGE_BUILDER_BLOCKS = [
     ('featured_cards', FeaturedCardsBlock()),
     ('content_section', ContentSectionBlock()),
     ('news_notice_latest', NewsNoticeLatestBlock()),
+    ('news_listing', NewsListingBlock()),
+    ('notice_listing', NoticeListingBlock()),
+    ('govt_order_listing', GovtOrderListingBlock()),
     ('quick_links_carousel', QuickLinksCarouselBlock()),
     ('quick_buttons', QuickButtonsBlock()),
+    ('pdf_banners', PdfBannersBlock()),
+    ('logo_carousel', LogoCarouselBlock()),
     ('rich_text', blocks.RichTextBlock()),
     ('raw_html', blocks.RawHTMLBlock(label="Raw HTML")),
+    ('home_pdf_banners', HomePdfBannersBlock()),
+    ('home_logo_carousel', HomeLogoCarouselBlock()),
+    ('home_quick_links', HomeQuickLinksCarouselBlock()),
+    ('shared_logo_slider', SharedLogoSliderBlock()),
+    ('shared_quick_links', SharedQuickLinksCarouselBlock()),
 ]
 
 
@@ -435,6 +688,10 @@ class HomePage(Page):
         context['news_pages'] = NewsPage.objects.live().public().order_by('-date')[:3]
         context['notice_pages'] = NoticePage.objects.live().public().order_by('-date')[:5]
         context['govt_orders'] = GovtOrderPage.objects.live().public().order_by('-order_date')[:5]
+        # Resolve index pages dynamically
+        context['news_index'] = NewsIndexPage.objects.live().public().first()
+        context['notice_index'] = NoticeIndexPage.objects.live().public().first()
+        context['govt_order_index'] = GovtOrderIndexPage.objects.live().public().first()
         return context
 
 
@@ -456,9 +713,11 @@ class CustomHTMLPage(Page):
 
 class NewsIndexPage(Page):
     intro = RichTextField(blank=True)
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('intro'),
+        FieldPanel('body'),
     ]
 
     def get_context(self, request):
@@ -478,6 +737,13 @@ class NewsPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     search_fields = Page.search_fields + [
         index.SearchField('intro'),
@@ -491,12 +757,18 @@ class NewsPage(Page):
         FieldPanel('image'),
     ]
 
+    settings_panels = Page.settings_panels + [
+        FieldPanel('document'),
+    ]
+
 
 class NoticeIndexPage(Page):
     intro = RichTextField(blank=True)
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('intro'),
+        FieldPanel('body'),
     ]
 
     def get_context(self, request):
@@ -521,15 +793,20 @@ class NoticePage(Page):
         FieldPanel('date'),
         FieldPanel('expiry_date'),
         FieldPanel('body'),
+    ]
+
+    settings_panels = Page.settings_panels + [
         FieldPanel('document'),
     ]
 
 
 class GovtOrderIndexPage(Page):
     intro = RichTextField(blank=True)
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('intro'),
+        FieldPanel('body'),
     ]
 
     def get_context(self, request):
@@ -589,5 +866,243 @@ class GovtOrderPage(Page):
         FieldPanel('order_date'),
         FieldPanel('department'),
         FieldPanel('subject'),
+    ]
+
+    settings_panels = Page.settings_panels + [
         FieldPanel('document'),
     ]
+
+
+class ProgramPlan(models.Model):
+    title = models.CharField(max_length=255, help_text="Title of the plan")
+    document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text="Upload/Select the plan document (PDF/Word/etc.)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    panels = [
+        FieldPanel('title'),
+        FieldPanel('document'),
+    ]
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Program Plan"
+        verbose_name_plural = "Program Plans"
+
+
+class ProgramImplementationPlanPage(Page):
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
+    custom_css = models.TextField(blank=True, verbose_name="Page Global Custom CSS", help_text="Write custom CSS styles specific to this page.")
+    custom_js = models.TextField(blank=True, verbose_name="Page Global Custom JS", help_text="Write custom JavaScript specific to this page.")
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    settings_panels = Page.settings_panels + [
+        FieldPanel('custom_css'),
+        FieldPanel('custom_js'),
+    ]
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['plans'] = ProgramPlan.objects.all().order_by('-created_at')
+        return context
+
+
+class RtiDisclosure(models.Model):
+    title = models.CharField(max_length=255, help_text="Title of the disclosure document")
+    document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text="Upload/Select the RTI document (PDF/Word/etc.)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    panels = [
+        FieldPanel('title'),
+        FieldPanel('document'),
+    ]
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "RTI Disclosure"
+        verbose_name_plural = "RTI Disclosures"
+
+
+class RtiPage(Page):
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
+    custom_css = models.TextField(blank=True, verbose_name="Page Global Custom CSS", help_text="Write custom CSS styles specific to this page.")
+    custom_js = models.TextField(blank=True, verbose_name="Page Global Custom JS", help_text="Write custom JavaScript specific to this page.")
+
+    content_panels = Page.content_panels + [
+        FieldPanel('body'),
+    ]
+
+    settings_panels = Page.settings_panels + [
+        FieldPanel('custom_css'),
+        FieldPanel('custom_js'),
+    ]
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context['disclosures'] = RtiDisclosure.objects.all().order_by('-created_at')
+        return context
+
+
+class LogoSlider(ClusterableModel):
+    name = models.CharField(
+        max_length=255, 
+        blank=True,  # Add this
+        null=True,   # Add this
+        help_text="Name of this logo slider (for internal reference)"
+    )
+
+    panels = [
+        FieldPanel('name'),
+        InlinePanel('logos', label="Logos"),
+    ]
+
+    def __str__(self):
+        return self.name or "Unnamed Logo Slider"  # Handle empty names
+
+    class Meta:
+        verbose_name = "Logo Slider"
+        verbose_name_plural = "Logo Sliders"
+
+class LogoSliderItem(Orderable):
+    logo_slider = ParentalKey(LogoSlider, on_delete=models.CASCADE, related_name='logos')
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name="Logo Image"
+    )
+    title = models.CharField(max_length=255, blank=True, help_text="Alt text / title for the logo")
+    link_url = models.CharField(max_length=255, blank=True, help_text="Optional external link URL")
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    panels = [
+        FieldPanel('image'),
+        FieldPanel('title'),
+        FieldPanel('link_url'),
+        FieldPanel('link_page'),
+    ]
+
+
+from wagtail.snippets.views.snippets import SnippetViewSet
+
+class LogoSliderViewSet(SnippetViewSet):
+    model = LogoSlider
+    icon = 'image'
+    menu_label = 'Logo Sliders'
+    menu_name = 'logo_sliders'
+    menu_order = 350
+    add_to_admin_menu = True
+
+register_snippet(LogoSlider, viewset=LogoSliderViewSet)
+
+
+class QuickLinksCarousel(ClusterableModel):
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Internal name for this carousel (e.g. Main Quick Links)",
+    )
+    title = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Optional section title shown above the circles on the website",
+    )
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('title'),
+        InlinePanel('links', label="Quick Links"),
+    ]
+
+    def __str__(self):
+        return self.name or self.title or "Unnamed Quick Links Carousel"
+
+    class Meta:
+        verbose_name = "Quick Links Carousel"
+        verbose_name_plural = "Quick Links Carousels"
+
+
+class QuickLinksCarouselItem(Orderable):
+    BORDER_COLORS = [
+        ('blue', 'Theme Blue'),
+        ('orange', 'Theme Orange'),
+        ('green', 'Theme Green'),
+        ('red', 'Theme Red'),
+    ]
+
+    carousel = ParentalKey(QuickLinksCarousel, on_delete=models.CASCADE, related_name='links')
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name="Icon Image",
+    )
+    title = models.CharField(max_length=100, help_text="Text displayed below the icon")
+    link_url = models.CharField(max_length=255, blank=True, help_text="Optional external link URL")
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    border_color = models.CharField(
+        max_length=20,
+        choices=BORDER_COLORS,
+        default='orange',
+        verbose_name="Circle Border Color",
+    )
+
+    panels = [
+        FieldPanel('image'),
+        FieldPanel('title'),
+        FieldPanel('link_url'),
+        FieldPanel('link_page'),
+        FieldPanel('border_color'),
+    ]
+
+
+class QuickLinksCarouselViewSet(SnippetViewSet):
+    model = QuickLinksCarousel
+    icon = 'link'
+    menu_label = 'Quick Links Carousel'
+    menu_name = 'quick_links_carousels'
+    menu_order = 355
+    add_to_admin_menu = True
+    list_display = ['name', 'title']
+    search_fields = ['name', 'title']
+
+
+# Registered in home/wagtail_hooks.py (same pattern as Program Plans / RTI)
+# so it appears in the main admin sidebar next to Logo Sliders.

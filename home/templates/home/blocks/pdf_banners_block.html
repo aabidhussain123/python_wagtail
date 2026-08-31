@@ -1,0 +1,74 @@
+{% load wagtailcore_tags wagtailimages_tags home_tags %}
+{% unique_id as block_id %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+<style>
+    #block-{{ block_id }} .pdf-banner-item {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        display: block;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        position: relative;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    #block-{{ block_id }} .pdf-banner-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    #block-{{ block_id }} .pdf-banner-img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+    }
+    #block-{{ block_id }} .pdf-banner-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #block-{{ block_id }} .pdf-banner-item:hover .pdf-banner-caption {
+        opacity: 1;
+    }
+</style>
+
+<div id="block-{{ block_id }}" class="pdf-banners-section {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-3">
+        {% if self.title %}
+            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4 text-center">{{ self.title }}</h3>
+        {% endif %}
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center">
+            {% for banner in self.banners %}
+                <div class="col">
+                    {% if banner.document %}
+                        <a href="{{ banner.document.url }}" class="pdf-banner-item" target="_blank" rel="noopener noreferrer">
+                            {% image banner.image fill-450x200 class="pdf-banner-img" alt=banner.caption|default:banner.document.title %}
+                            {% if banner.caption %}
+                                <div class="pdf-banner-caption">
+                                    {{ banner.caption }}
+                                </div>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
