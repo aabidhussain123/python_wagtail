@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags home_tags %}
+
+{% block content %}
+{% stream_blocks_at page.body 'before_heading' %}
+
+<div class="container py-4">
+    <!-- <h1 class="display-6 fw-bold border-bottom pb-2 mb-4">{{ page.title }}</h1> -->
+
+    {% stream_blocks_at page.body 'after_heading' %}
+
+    <h4 class="fw-bold mb-3"><i class="bi bi-download me-2 text-primary"></i>Available Downloads</h4>
+
+    {% if downloads %}
+        <div class="table-responsive shadow-sm rounded border bg-white">
+            <table class="table table-hover table-striped mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" style="width: 70%;">Title</th>
+                        <th scope="col" style="width: 30%;" class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dl in downloads %}
+                        <tr>
+                            <td>
+                                <span class="fw-semibold text-dark d-block">{{ dl.title }}</span>
+                                {% if dl.subtitle %}
+                                    <small class="text-muted d-block mt-1">{{ dl.subtitle }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if dl.document %}
+                                    <a href="{{ dl.document.url }}" class="btn btn-primary btn-sm px-3" target="_blank">
+                                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download/View
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">No File Attached</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info shadow-sm" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>No downloads are available at the moment. Please check back later.
+        </div>
+    {% endif %}
+</div>
+
+{% stream_blocks_at page.body 'after_main_content' %}
+{% stream_blocks_at page.body 'in_stream' %}
+{% endblock %}
+
+{% block above_footer %}
+{% stream_blocks_at page.body 'above_footer' %}
+{% endblock %}
+
+{% block extra_css %}
+    {% if page.custom_css %}
+        <style>
+            {{ page.custom_css|safe }}
+        </style>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if page.custom_js %}
+        <script>
+            {{ page.custom_js|safe }}
+        </script>
+    {% endif %}
+{% endblock %}

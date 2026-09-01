@@ -9,6 +9,12 @@
 </style>
 {% endif %}
 
+{% if self.custom_css %}
+<style>
+    {{ self.custom_css|safe }}
+</style>
+{% endif %}
+
 <div id="block-{{ block_id }}" class="py-5 px-4 rounded border-0 {% if self.bg_color == 'light' %}bg-light border-light{% elif self.bg_color == 'primary-light' %}bg-info-subtle border-info-subtle{% else %}bg-transparent{% endif %} {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
     <div class="container">
         <div class="row align-items-center g-5">

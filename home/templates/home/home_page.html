@@ -6,10 +6,106 @@
 {% block content %}
 {% stream_blocks_at page.body 'before_heading' %}
 {% stream_blocks_at page.body 'after_heading' %}
-{% stream_blocks_at page.body 'in_stream' %}
+
+{# Custom rendering for in_stream blocks on homepage #}
+{% get_in_stream_blocks page.body as in_stream_blocks %}
+
+{% if in_stream_blocks %}
+    {% with first_block=in_stream_blocks|first %}
+        {% if first_block.block_type == 'slider' and in_stream_blocks|length > 1 %}
+            {# Side-by-side layout: content on left (index 1), slider on right (index 0) #}
+            {% with content_block=in_stream_blocks|slice:"1:2"|first other_blocks=in_stream_blocks|slice:"2:" %}
+                <div class="container my-5 homepage-side-by-side">
+                    <div class="row align-items-start g-4">
+                        <div class="col-md-4 order-2 order-md-1 homepage-side-by-side-content">
+                            {% if content_block.block_type == 'raw_html' %}
+                                {{ content_block.value|safe }}
+                            {% else %}
+                                {% include_block content_block %}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8 order-1 order-md-2 homepage-side-by-side-slider">
+                            {% with is_side_by_side=True %}
+                                {% include_block first_block %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+                
+                {# Render the rest of the in_stream blocks #}
+                {% for block in other_blocks %}
+                    {% if block.block_type == 'raw_html' %}
+                        {{ block.value|safe }}
+                    {% else %}
+                        {% include_block block %}
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
+        {% else %}
+            {# Normal rendering of all in_stream blocks #}
+            {% for block in in_stream_blocks %}
+                {% if block.block_type == 'raw_html' %}
+                    {{ block.value|safe }}
+                {% else %}
+                    {% include_block block %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endif %}
+
 {% stream_blocks_at page.body 'after_main_content' %}
 {% endblock %}
 
 {% block above_footer %}
 {% stream_blocks_at page.body 'above_footer' %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media (min-width: 768px) {
+        .homepage-side-by-side-content .container {
+            background: #fff;
+            padding: 2rem !important;
+            border-radius: 8px;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        
+        .homepage-side-by-side-slider > div {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+    }
+
+    /* Styles applicable at all screen widths */
+    .homepage-side-by-side .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .homepage-side-by-side .read-more {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1.25rem;
+        background-color: var(--gov-accent, #ff9933);
+        color: #000;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        align-self: flex-start;
+    }
+    .homepage-side-by-side .read-more:hover {
+        background-color: #e68a2e;
+        color: #000;
+    }
+</style>
 {% endblock %}

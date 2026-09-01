@@ -1,288 +1,458 @@
 {% load wagtailimages_tags wagtailcore_tags home_tags %}
 {% unique_id as block_id %}
 
-{% if self.style.custom_css %}
 <style>
+    /* Scoped Container Styles */
     #block-{{ block_id }} {
-        {{ self.style.custom_css|safe }}
+        color: #1a202c;
+        font-family: inherit;
     }
-</style>
-{% endif %}
+    #block-{{ block_id }} a {
+        color: #1a202c;
+        text-decoration: none;
+    }
+    #block-{{ block_id }} a:hover,
+    #block-{{ block_id }} a:focus {
+        color: #2b6cb0;
+        text-decoration: underline;
+    }
 
-<style>
-    /* Horizontal Ticker CSS */
-    @keyframes marquee-horizontal {
+    /* Custom CSS Overrides */
+    {% if self.style.custom_css %}
+        #block-{{ block_id }} {
+            {{ self.style.custom_css|safe }}
+        }
+    {% endif %}
+
+    /* Horizontal Marquee Animation */
+    @keyframes marquee-h-{{ block_id }} {
         0% { transform: translate3d(0, 0, 0); }
         100% { transform: translate3d(-50%, 0, 0); }
     }
     #block-{{ block_id }} .ticker-marquee-track {
         display: flex;
         white-space: nowrap;
-        animation: marquee-horizontal 35s linear infinite;
+        animation: marquee-h-{{ block_id }} 40s linear infinite;
     }
-    #block-{{ block_id }} .news-ticker-container:hover .ticker-marquee-track {
+    #block-{{ block_id }} .news-ticker-container:hover .ticker-marquee-track,
+    #block-{{ block_id }} .news-ticker-container:focus-within .ticker-marquee-track {
         animation-play-state: paused;
     }
 
-    /* Vertical Ticker CSS */
-    @keyframes ticker-vertical {
+    /* Vertical Ticker Animation */
+    @keyframes marquee-v-{{ block_id }} {
         0% { transform: translate3d(0, 0, 0); }
         100% { transform: translate3d(0, -50%, 0); }
     }
     #block-{{ block_id }} .ticker-vertical-container {
-        height: 380px;
+        height: 420px;
         overflow: hidden;
         position: relative;
     }
     #block-{{ block_id }} .ticker-vertical-track {
-        animation: ticker-vertical 30s linear infinite;
+        animation: marquee-v-{{ block_id }} 35s linear infinite;
     }
-    #block-{{ block_id }} .ticker-vertical-container:hover .ticker-vertical-track {
+    #block-{{ block_id }} .ticker-vertical-container:hover .ticker-vertical-track,
+    #block-{{ block_id }} .ticker-vertical-container:focus-within .ticker-vertical-track {
         animation-play-state: paused;
     }
-    
-    /* Fade effects at top and bottom of vertical tickers */
+
+    /* Gradient Fades for Smooth Scroll Edges */
     #block-{{ block_id }} .ticker-vertical-container::before,
     #block-{{ block_id }} .ticker-vertical-container::after {
         content: "";
         position: absolute;
         left: 0;
         right: 0;
-        height: 30px;
+        height: 24px;
         z-index: 5;
         pointer-events: none;
     }
     #block-{{ block_id }} .ticker-vertical-container::before {
         top: 0;
-        background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+        background: linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0) 100%);
     }
     #block-{{ block_id }} .ticker-vertical-container::after {
         bottom: 0;
-        background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+        background: linear-gradient(to top, #ffffff 0%, rgba(255,255,255,0) 100%);
+    }
+
+    /* Mobile Responsiveness Overrides for News/Notices Dashboard & Marquee Ticker */
+    @media (max-width: 767.98px) {
+        #block-{{ block_id }} .news-ticker-container {
+            flex-direction: column !important;
+        }
+        #block-{{ block_id }} .ticker-label {
+            border-right: none !important;
+            border-bottom: 1px solid #d38307 !important;
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 8px 12px !important;
+        }
+        #block-{{ block_id }} .ticker-content {
+            padding: 8px 0 !important;
+        }
+        #block-{{ block_id }} .ticker-vertical-container {
+            height: 350px !important;
+        }
+    }
+
+    /* Government Styled Dashboard Cards */
+    #block-{{ block_id }} .dashboard-card {
+        background: #ffffff;
+        border: 1px solid #f39c12;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    #block-{{ block_id }} .dashboard-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+    #block-{{ block_id }} .card-header-bar {
+        border-bottom: 1px solid #2f2dd3;
+        background-color: #f39c12;
+        padding: 0.85rem 1rem;
+    }
+    #block-{{ block_id }} .card-header-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #000000;
+    }
+    #block-{{ block_id }} .btn-view-all {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #000000;
+        border: 1px solid #d38307;
+        border-radius: 4px;
+        padding: 3px 10px;
+        background-color: #ffffff;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    #block-{{ block_id }} .btn-view-all:hover {
+        background-color: #002b66;
+        color: #ffffff;
+        border-color: #002b66;
+        text-decoration: none;
+    }
+    #block-{{ block_id }} .feed-item {
+        border-bottom: 1px solid #f0f4f8;
+        padding: 0.85rem 0.9rem;
+        transition: background-color 0.15s ease;
+    }
+    #block-{{ block_id }} .feed-item:hover {
+        background-color: #f7fafc;
+    }
+    #block-{{ block_id }} .feed-title {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: #1a202c;
+        line-height: 1.38;
+    }
+    #block-{{ block_id }} .feed-title a {
+        color: #1a202c;
+        text-decoration: none;
+    }
+    #block-{{ block_id }} .feed-title a:hover {
+        color: #2b6cb0;
+        text-decoration: underline;
+    }
+    #block-{{ block_id }} .feed-desc {
+        color: #4a5568;
+        font-size: 0.82rem;
+        line-height: 1.38;
+        margin-top: 3px;
+    }
+    #block-{{ block_id }} .feed-date {
+        color: #718096;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+    #block-{{ block_id }} .badge-notice {
+        background-color: #e53e3e;
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    #block-{{ block_id }} .badge-dept {
+        background-color: #1a202c;
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    #block-{{ block_id }} .btn-pdf-link {
+        border: 1px solid #e53e3e;
+        color: #e53e3e;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-decoration: none;
+        background: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+    }
+    #block-{{ block_id }} .btn-pdf-link:hover {
+        background-color: #e53e3e;
+        color: #ffffff;
+        text-decoration: none;
     }
 </style>
 
-<div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
-    <div class="container py-2">
+<section id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-3">
+        
         {% if self.title %}
-            <h2 class="text-center fw-bold mb-4 text-primary position-relative pb-2">
-                {{ self.title }}
-                <span class="position-absolute bottom-0 start-50 translate-middle-x bg-warning" style="width: 80px; height: 3px;"></span>
-            </h2>
+            <div class="text-left mb-4">
+                <h2 class="fw-bold mb-2 text-dark d-inline-block position-relative pb-2">
+                    {{ self.title }}
+                    <span class="position-absolute bottom-0 start-0 translate-middle-x" style="left: 30px; width: 60px; height: 3px; background-color: #f39c12; border-radius: 2px;"></span>
+                </h2>
+            </div>
         {% endif %}
 
-        <!-- Horizontal Marquee News Ticker -->
+        <!-- Horizontal Marquee Announcement Ticker (Saffron Full-Width Banner Style) -->
         {% if news_pages %}
-            <div class="news-ticker-container d-flex align-items-stretch mb-4 shadow-sm rounded overflow-hidden border border-light" style="background-color: #f8f9fa;">
-                <div class="ticker-label bg-danger text-white fw-bold px-3 py-2 d-flex align-items-center gap-2" style="font-size: 0.9rem; white-space: nowrap; z-index: 10;">
-                    <i class="bi bi-broadcast"></i> Latest News
+            <div class="news-ticker-container d-flex align-items-stretch mb-4 shadow-sm overflow-hidden" style="background-color: #f39c12; border: 1px solid #d38307; border-radius: 4px;" role="region" aria-label="Latest Announcements">
+                <div class="ticker-label text-dark fw-bold px-3 py-2 d-flex align-items-center gap-2" style="background-color: #f39c12; border-right: 1px solid #d38307; font-size: 0.95rem; white-space: nowrap; z-index: 10;">
+                    Latest News
                 </div>
-                <div class="ticker-content flex-grow-1 overflow-hidden d-flex align-items-center py-2 position-relative">
-                    <div class="ticker-marquee-track d-flex align-items-center gap-5">
+                <div class="ticker-content flex-grow-1 overflow-hidden d-flex align-items-center py-2" style="background-color: #f39c12;">
+                    <div class="ticker-marquee-track d-flex align-items-center gap-5 ps-3">
                         <div class="d-flex align-items-center gap-5">
                             {% for news in news_pages %}
-                                <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank"{% endif %} class="text-dark text-decoration-none fw-semibold small d-inline-flex align-items-center gap-2">
-                                    <span class="badge bg-primary">{{ news.date|date:"d M Y" }}</span>
+                                <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank" rel="noopener noreferrer"{% endif %} class="small fw-semibold d-inline-flex align-items-center gap-2 text-dark text-decoration-none">
                                     <span>{{ news.title }}</span>
+                                    <span class="badge" style="background-color: #cc0000; color: #ffffff; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 2px;">New</span>
                                 </a>
-                                <span class="text-muted fw-bold">|</span>
+                                <span class="text-dark opacity-50">|</span>
                             {% endfor %}
                         </div>
-                        <!-- Duplicate list for seamless infinite loop -->
-                        <div class="d-flex align-items-center gap-5">
+                        <div class="d-flex align-items-center gap-5" aria-hidden="true">
                             {% for news in news_pages %}
-                                <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank"{% endif %} class="text-dark text-decoration-none fw-semibold small d-inline-flex align-items-center gap-2">
-                                    <span class="badge bg-primary">{{ news.date|date:"d M Y" }}</span>
+                                <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" tabindex="-1" class="small fw-semibold d-inline-flex align-items-center gap-2 text-dark text-decoration-none">
                                     <span>{{ news.title }}</span>
+                                    <span class="badge" style="background-color: #cc0000; color: #ffffff; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 2px;">New</span>
                                 </a>
-                                <span class="text-muted fw-bold">|</span>
+                                <span class="text-dark opacity-50">|</span>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
         {% endif %}
-        
+
         <div class="row g-4">
-            <!-- News Column -->
+            
+            <!-- Box 1: Latest News -->
             <div class="col-lg-4 col-md-12">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-header bg-primary text-white py-3 d-flex align-items-center justify-content-between">
-                        <h4 class="h5 mb-0 fw-bold"><i class="bi bi-newspaper me-2 text-warning"></i>Latest News</h4>
-                        <a href="{% if news_index %}{% pageurl news_index %}{% else %}/news/{% endif %}" class="btn btn-sm btn-outline-light py-0 px-2 text-white border-white-50">View All</a>
+                <div class="dashboard-card h-100 d-flex flex-column">
+                    <div class="card-header-bar d-flex align-items-center justify-content-between rounded-top">
+                        <h3 class="card-header-title mb-0 d-flex align-items-center">
+                            <i class="bi bi-newspaper me-2 text-primary fs-5"></i>Latest News
+                        </h3>
+                        <a href="{% if news_index %}{% pageurl news_index %}{% else %}/news/{% endif %}" class="btn-view-all">View All</a>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body p-0 flex-grow-1">
                         {% if news_pages %}
                             <div class="ticker-vertical-container">
-                                <div class="list-group list-group-flush ticker-vertical-track">
-                                    <!-- Render Items -->
+                                <div class="ticker-vertical-track">
                                     {% for news in news_pages %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
+                                        <article class="feed-item">
                                             <div class="d-flex gap-3">
                                                 {% if news.image %}
-                                                    <div style="flex-shrink: 0; width: 70px;">
-                                                        {% image news.image fill-70x70 class="rounded img-fluid" alt=news.title %}
+                                                    <div style="flex-shrink: 0; width: 60px;">
+                                                        {% image news.image fill-60x60 class="rounded border" alt=news.title %}
                                                     </div>
                                                 {% endif %}
-                                                <div>
-                                                    <small class="text-muted d-block mb-1"><i class="bi bi-calendar3 me-1"></i>{{ news.date|date:"d M Y" }}</small>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.95rem;">
-                                                        <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank"{% endif %} class="text-dark text-decoration-none hover-primary">{{ news.title }}</a>
-                                                    </h5>
-                                                    <p class="text-muted small mb-0">{{ news.intro|truncatechars:65 }}</p>
+                                                <div class="flex-grow-1">
+                                                    <div class="feed-date mb-1">
+                                                        <i class="bi bi-calendar3 me-1"></i>{{ news.date|date:"d M Y" }}
+                                                    </div>
+                                                    <h4 class="feed-title mb-1">
+                                                        <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ news.title }}</a>
+                                                    </h4>
+                                                    {% if news.intro %}
+                                                        <p class="feed-desc mb-0">{{ news.intro|truncatechars:65 }}</p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
-                                        </div>
+                                        </article>
                                     {% endfor %}
-                                    <!-- Duplicate Items for loop -->
+                                    <!-- Duplicate loop for smooth vertical animation -->
                                     {% for news in news_pages %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
+                                        <article class="feed-item" aria-hidden="true">
                                             <div class="d-flex gap-3">
                                                 {% if news.image %}
-                                                    <div style="flex-shrink: 0; width: 70px;">
-                                                        {% image news.image fill-70x70 class="rounded img-fluid" alt=news.title %}
+                                                    <div style="flex-shrink: 0; width: 60px;">
+                                                        {% image news.image fill-60x60 class="rounded border" alt="" %}
                                                     </div>
                                                 {% endif %}
-                                                <div>
-                                                    <small class="text-muted d-block mb-1"><i class="bi bi-calendar3 me-1"></i>{{ news.date|date:"d M Y" }}</small>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.95rem;">
-                                                        <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" {% if news.document %}target="_blank"{% endif %} class="text-dark text-decoration-none hover-primary">{{ news.title }}</a>
-                                                    </h5>
-                                                    <p class="text-muted small mb-0">{{ news.intro|truncatechars:65 }}</p>
+                                                <div class="flex-grow-1">
+                                                    <div class="feed-date mb-1">
+                                                        <i class="bi bi-calendar3 me-1"></i>{{ news.date|date:"d M Y" }}
+                                                    </div>
+                                                    <h4 class="feed-title mb-1">
+                                                        <a href="{% if news.document %}{{ news.document.url }}{% else %}{% pageurl news %}{% endif %}" tabindex="-1">{{ news.title }}</a>
+                                                    </h4>
+                                                    {% if news.intro %}
+                                                        <p class="feed-desc mb-0">{{ news.intro|truncatechars:65 }}</p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
-                                        </div>
+                                        </article>
                                     {% endfor %}
                                 </div>
                             </div>
                         {% else %}
-                            <p class="text-muted text-center my-4">No news articles found.</p>
+                            <p class="text-muted text-center my-4 small">No news articles published.</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Notices Column -->
+            <!-- Box 2: Official Notices -->
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-header bg-dark text-white py-3 d-flex align-items-center justify-content-between">
-                        <h4 class="h5 mb-0 fw-bold"><i class="bi bi-bell-fill me-2 text-warning"></i>Official Notices</h4>
-                        <a href="{% if notice_index %}{% pageurl notice_index %}{% else %}/notices/{% endif %}" class="btn btn-sm btn-outline-light py-0 px-2 text-white border-white-50">View All</a>
+                <div class="dashboard-card h-100 d-flex flex-column">
+                    <div class="card-header-bar d-flex align-items-center justify-content-between rounded-top">
+                        <h3 class="card-header-title mb-0 d-flex align-items-center">
+                            <i class="bi bi-bell-fill me-2 text-danger fs-5"></i>Official Notices
+                        </h3>
+                        <a href="{% if notice_index %}{% pageurl notice_index %}{% else %}/notices/{% endif %}" class="btn-view-all">View All</a>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body p-0 flex-grow-1">
                         {% if notice_pages %}
                             <div class="ticker-vertical-container">
-                                <div class="list-group list-group-flush ticker-vertical-track">
-                                    <!-- Render Items -->
+                                <div class="ticker-vertical-track">
                                     {% for notice in notice_pages %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <span class="badge bg-danger mb-2">Notice</span>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.95rem;">
-                                                        <a href="{% if notice.document %}{{ notice.document.url }}{% else %}{% pageurl notice %}{% endif %}" {% if notice.document %}target="_blank"{% endif %} class="text-dark text-decoration-none">{{ notice.title }}</a>
-                                                    </h5>
-                                                    <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>Published: {{ notice.date|date:"d M Y" }}</small>
+                                        <article class="feed-item">
+                                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                                        <span class="badge-notice">Notice</span>
+                                                        <span class="feed-date">{{ notice.date|date:"d M Y" }}</span>
+                                                    </div>
+                                                    <h4 class="feed-title mb-0">
+                                                        <a href="{% if notice.document %}{{ notice.document.url }}{% else %}{% pageurl notice %}{% endif %}" {% if notice.document %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ notice.title }}</a>
+                                                    </h4>
                                                 </div>
                                                 {% if notice.document %}
-                                                    <a href="{{ notice.document.url }}" class="btn btn-sm btn-outline-danger ms-2" target="_blank" title="Download Document">
-                                                        <i class="bi bi-file-earmark-pdf fs-5"></i>
+                                                    <a href="{{ notice.document.url }}" class="btn-pdf-link flex-shrink-0" target="_blank" rel="noopener noreferrer" title="Download Notice PDF">
+                                                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
                                                     </a>
                                                 {% endif %}
                                             </div>
-                                        </div>
+                                        </article>
                                     {% endfor %}
-                                    <!-- Duplicate Items for loop -->
+                                    <!-- Duplicate loop -->
                                     {% for notice in notice_pages %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <span class="badge bg-danger mb-2">Notice</span>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.95rem;">
-                                                        <a href="{% if notice.document %}{{ notice.document.url }}{% else %}{% pageurl notice %}{% endif %}" {% if notice.document %}target="_blank"{% endif %} class="text-dark text-decoration-none">{{ notice.title }}</a>
-                                                    </h5>
-                                                    <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>Published: {{ notice.date|date:"d M Y" }}</small>
+                                        <article class="feed-item" aria-hidden="true">
+                                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                                        <span class="badge-notice">Notice</span>
+                                                        <span class="feed-date">{{ notice.date|date:"d M Y" }}</span>
+                                                    </div>
+                                                    <h4 class="feed-title mb-0">
+                                                        <a href="{% if notice.document %}{{ notice.document.url }}{% else %}{% pageurl notice %}{% endif %}" tabindex="-1">{{ notice.title }}</a>
+                                                    </h4>
                                                 </div>
                                                 {% if notice.document %}
-                                                    <a href="{{ notice.document.url }}" class="btn btn-sm btn-outline-danger ms-2" target="_blank" title="Download Document">
-                                                        <i class="bi bi-file-earmark-pdf fs-5"></i>
-                                                    </a>
+                                                    <span class="btn-pdf-link flex-shrink-0">
+                                                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                                                    </span>
                                                 {% endif %}
                                             </div>
-                                        </div>
+                                        </article>
                                     {% endfor %}
                                 </div>
                             </div>
                         {% else %}
-                            <p class="text-muted text-center my-4">No notices found.</p>
+                            <p class="text-muted text-center my-4 small">No active notices found.</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Government Orders Column -->
+            <!-- Box 3: Government Orders -->
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-header bg-secondary text-white py-3 d-flex align-items-center justify-content-between" style="background-color: #0c4a6e !important;">
-                        <h4 class="h5 mb-0 fw-bold"><i class="bi bi-file-earmark-text-fill me-2 text-warning"></i>Govt. Orders</h4>
-                        <a href="{% if govt_order_index %}{% pageurl govt_order_index %}{% else %}/govt-orders/{% endif %}" class="btn btn-sm btn-outline-light py-0 px-2 text-white border-white-50">View All</a>
+                <div class="dashboard-card h-100 d-flex flex-column">
+                    <div class="card-header-bar d-flex align-items-center justify-content-between rounded-top">
+                        <h3 class="card-header-title mb-0 d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text-fill me-2 text-dark fs-5"></i>Govt. Orders
+                        </h3>
+                        <a href="{% if govt_order_index %}{% pageurl govt_order_index %}{% else %}/govt-orders/{% endif %}" class="btn-view-all">View All</a>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body p-0 flex-grow-1">
                         {% if govt_orders %}
                             <div class="ticker-vertical-container">
-                                <div class="list-group list-group-flush ticker-vertical-track">
-                                    <!-- Render Items -->
+                                <div class="ticker-vertical-track">
                                     {% for order in govt_orders %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <span class="badge bg-secondary mb-2" style="font-size: 0.75rem;">{{ order.get_department_display }}</span>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.9rem;">
-                                                        <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" {% if order.document %}target="_blank"{% endif %} class="text-dark text-decoration-none">
-                                                            {{ order.order_number }}: {{ order.title }}
-                                                        </a>
-                                                    </h5>
-                                                    <p class="text-muted small mb-1">{{ order.subject|truncatechars:60 }}</p>
-                                                    <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>{{ order.order_date|date:"d M Y" }}</small>
-                                                </div>
+                                        <article class="feed-item">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                                <span class="badge-dept" title="{{ order.get_department_display|default:'General' }}">
+                                                    {{ order.get_department_display|default:"General" }}
+                                                </span>
+                                                <span class="feed-date ms-auto">{{ order.order_date|date:"d M Y" }}</span>
                                                 {% if order.document %}
-                                                    <a href="{{ order.document.url }}" class="btn btn-sm btn-outline-primary ms-2" target="_blank" title="Download Document">
-                                                        <i class="bi bi-file-earmark-pdf fs-5"></i>
+                                                    <a href="{{ order.document.url }}" class="btn-pdf-link flex-shrink-0" target="_blank" rel="noopener noreferrer" title="Download Order Document">
+                                                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
                                                     </a>
                                                 {% endif %}
                                             </div>
-                                        </div>
+                                            <h4 class="feed-title mb-1">
+                                                <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" {% if order.document %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                                                    <span class="text-primary">{{ order.order_number }}:</span> {{ order.title }}
+                                                </a>
+                                            </h4>
+                                            {% if order.subject %}
+                                                <p class="feed-desc mb-0">{{ order.subject|truncatechars:65 }}</p>
+                                            {% endif %}
+                                        </article>
                                     {% endfor %}
-                                    <!-- Duplicate Items for loop -->
+                                    <!-- Duplicate loop -->
                                     {% for order in govt_orders %}
-                                        <div class="list-group-item px-0 py-3 border-bottom border-light">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <span class="badge bg-secondary mb-2" style="font-size: 0.75rem;">{{ order.get_department_display }}</span>
-                                                    <h5 class="h6 fw-bold mb-1" style="font-size: 0.9rem;">
-                                                        <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" {% if order.document %}target="_blank"{% endif %} class="text-dark text-decoration-none">
-                                                            {{ order.order_number }}: {{ order.title }}
-                                                        </a>
-                                                    </h5>
-                                                    <p class="text-muted small mb-1">{{ order.subject|truncatechars:60 }}</p>
-                                                    <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>{{ order.order_date|date:"d M Y" }}</small>
-                                                </div>
+                                        <article class="feed-item" aria-hidden="true">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                                <span class="badge-dept" title="{{ order.get_department_display|default:'General' }}">
+                                                    {{ order.get_department_display|default:"General" }}
+                                                </span>
+                                                <span class="feed-date ms-auto">{{ order.order_date|date:"d M Y" }}</span>
                                                 {% if order.document %}
-                                                    <a href="{{ order.document.url }}" class="btn btn-sm btn-outline-primary ms-2" target="_blank" title="Download Document">
-                                                        <i class="bi bi-file-earmark-pdf fs-5"></i>
-                                                    </a>
+                                                    <span class="btn-pdf-link flex-shrink-0">
+                                                        <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                                                    </span>
                                                 {% endif %}
                                             </div>
-                                        </div>
+                                            <h4 class="feed-title mb-1">
+                                                <a href="{% if order.document %}{{ order.document.url }}{% else %}{% pageurl order %}{% endif %}" tabindex="-1">
+                                                    <span class="text-primary">{{ order.order_number }}:</span> {{ order.title }}
+                                                </a>
+                                            </h4>
+                                            {% if order.subject %}
+                                                <p class="feed-desc mb-0">{{ order.subject|truncatechars:65 }}</p>
+                                            {% endif %}
+                                        </article>
                                     {% endfor %}
                                 </div>
                             </div>
                         {% else %}
-                            <p class="text-muted text-center my-4">No government orders found.</p>
+                            <p class="text-muted text-center my-4 small">No government orders available.</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
-</div>
+</section>

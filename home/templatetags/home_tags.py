@@ -120,3 +120,10 @@ def stream_blocks_at(context, body, placement):
         'request': context.get('request'),
         'page': context.get('page'),
     }
+
+
+@register.simple_tag
+def get_in_stream_blocks(body):
+    """Return list of blocks placed in_stream."""
+    return [block for block in (body or []) if block_placement(block) == 'in_stream']
+

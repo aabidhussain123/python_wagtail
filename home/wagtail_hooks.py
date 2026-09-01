@@ -84,73 +84,96 @@ def global_admin_js():
 
 
 
-# --- CUSTOM ADMIN MENUS FOR NEWS, NOTICES, & GOVT ORDERS ---
+# --- CUSTOM ADMIN MENUS FOR PORTAL CONTENT ---
 
+from wagtail.admin.viewsets.base import ViewSetGroup
 from wagtail.admin.viewsets.pages import PageListingViewSet
-from home.models import NewsPage, NoticePage, GovtOrderPage
+from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.snippets.models import register_snippet
+from home.models import (
+    NewsPage, 
+    NoticePage, 
+    GovtOrderPage, 
+    ProgramPlan, 
+    RtiDisclosure, 
+    Download,
+    QuickLinksCarouselViewSet
+)
 
 class NewsPageListingViewSet(PageListingViewSet):
     model = NewsPage
+    name = 'news_articles'
     icon = 'newspaper'
     menu_label = 'News Articles'
-    menu_order = 300
-    add_to_admin_menu = True
+    menu_order = 10
+    add_to_admin_menu = False
 
 class NoticePageListingViewSet(PageListingViewSet):
     model = NoticePage
+    name = 'official_notices'
     icon = 'warning'
     menu_label = 'Official Notices'
-    menu_order = 310
-    add_to_admin_menu = True
+    menu_order = 20
+    add_to_admin_menu = False
 
 class GovtOrderPageListingViewSet(PageListingViewSet):
     model = GovtOrderPage
+    name = 'govt_orders'
     icon = 'doc-full'
     menu_label = 'Government Orders'
-    menu_order = 320
-    add_to_admin_menu = True
+    menu_order = 30
+    add_to_admin_menu = False
 
-@hooks.register('register_admin_viewset')
-def register_news_page_listing_viewset():
-    return NewsPageListingViewSet('news_articles')
-
-@hooks.register('register_admin_viewset')
-def register_notice_page_listing_viewset():
-    return NoticePageListingViewSet('official_notices')
-
-@hooks.register('register_admin_viewset')
-def register_govt_order_page_listing_viewset():
-    return GovtOrderPageListingViewSet('govt_orders')
-
-
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.views.snippets import SnippetViewSet
-from home.models import ProgramPlan
-
-class ProgramPlanViewSet(SnippetViewSet):
+class ProgramPlanViewSet(ModelViewSet):
     model = ProgramPlan
+    name = 'program_plans'
     icon = 'doc-full'
     menu_label = 'Program Plans'
-    menu_name = 'program_plans'
-    menu_order = 330
-    add_to_admin_menu = True
+    menu_order = 40
+    add_to_admin_menu = False
+    list_display = ['title', 'document', 'created_at']
+    search_fields = ['title']
 
-register_snippet(ProgramPlanViewSet)
-
-
-from home.models import RtiDisclosure
-
-class RtiDisclosureViewSet(SnippetViewSet):
+class RtiDisclosureViewSet(ModelViewSet):
     model = RtiDisclosure
+    name = 'rti_disclosures'
     icon = 'doc-full-inverse'
     menu_label = 'RTI Disclosures'
-    menu_name = 'rti_disclosures'
-    menu_order = 340
-    add_to_admin_menu = True
+    menu_order = 50
+    add_to_admin_menu = False
+    list_display = ['title', 'document', 'created_at']
+    search_fields = ['title']
 
-register_snippet(RtiDisclosureViewSet)
+class DownloadViewSet(ModelViewSet):
+    model = Download
+    name = 'downloads'
+    icon = 'download'
+    menu_label = 'Downloads'
+    menu_order = 60
+    add_to_admin_menu = False
+    list_display = ['title', 'subtitle', 'category', 'document', 'created_at']
+    list_filter = ['category']
+    search_fields = ['title', 'subtitle', 'category']
 
+class PortalContentViewSetGroup(ViewSetGroup):
+    menu_label = 'Portal Content'
+    menu_icon = 'folder-open-inverse'
+    menu_order = 300
+    items = (
+        NewsPageListingViewSet,
+        NoticePageListingViewSet,
+        GovtOrderPageListingViewSet,
+        ProgramPlanViewSet,
+        RtiDisclosureViewSet,
+        DownloadViewSet,
+    )
 
-from home.models import QuickLinksCarouselViewSet
+@hooks.register('register_admin_viewset')
+def register_portal_content_viewset_group():
+    return PortalContentViewSetGroup()
+
 
 register_snippet(QuickLinksCarouselViewSet)
+
+
+

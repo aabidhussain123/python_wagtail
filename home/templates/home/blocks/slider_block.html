@@ -10,7 +10,9 @@
 {% endif %}
 
 <div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    {% if not is_side_by_side %}
     <div class="{{ self.container_width|default:'container-fluid' }}">
+    {% endif %}
         <div id="carousel-{{ block_id }}" class="carousel slide shadow rounded" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 {% for slide in self.slides %}
@@ -53,5 +55,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+    {% if not is_side_by_side %}
     </div>
+    {% endif %}
 </div>

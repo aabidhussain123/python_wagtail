@@ -165,6 +165,7 @@ class ContentSectionBlock(blocks.StructBlock):
         ('light', 'Light Gray Background'),
         ('primary-light', 'Light Blue Background')
     ], default='white')
+    custom_css = blocks.TextBlock(required=False, label="Custom CSS for Section", help_text="Write custom CSS rules specifically for this section.")
     style = BlockStyleStructBlock(label="Display Position & Styling", required=False)
 
     class Meta:
@@ -636,6 +637,10 @@ class Menu(ClusterableModel):
 
 class MenuItem(Orderable):
     menu = ParentalKey(Menu, related_name='menu_items')
+
+    def __str__(self):
+        return self.link_text
+
     parent = models.ForeignKey(
         'self',
         null=True,
@@ -643,7 +648,7 @@ class MenuItem(Orderable):
         on_delete=models.CASCADE,
         related_name='children',
         verbose_name="Parent Menu Item",
-        help_text="Select a parent menu item if this is a submenu item (supports up to 3 levels)."
+        help_text="Select a parent menu item if this is a submenu item (supports up to 5 levels)."
     )
     link_text = models.CharField(max_length=50)
     link_url = models.CharField(max_length=255, blank=True, help_text="For external links or paths (e.g., https://google.com or /contact/)")
@@ -676,6 +681,18 @@ class MenuItem(Orderable):
 # --- PAGES MODELS ---
 
 class HomePage(Page):
+    subpage_types = [
+        'home.StandardPage',
+        'home.CustomHTMLPage',
+        'home.NewsIndexPage',
+        'home.NoticeIndexPage',
+        'home.GovtOrderIndexPage',
+        'home.ProgramImplementationPlanPage',
+        'home.RtiPage',
+        'home.DownloadsPage',
+    ]
+    parent_page_types = ['wagtailcore.Page']
+
     body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
 
     content_panels = Page.content_panels + [
@@ -1106,3 +1123,108 @@ class QuickLinksCarouselViewSet(SnippetViewSet):
 
 # Registered in home/wagtail_hooks.py (same pattern as Program Plans / RTI)
 # so it appears in the main admin sidebar next to Logo Sliders.
+
+
+class Download(models.Model):
+    title = models.CharField(max_length=255, help_text="Title of the download")
+    subtitle = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Subtitle / Short Description",
+        help_text="Optional short description or subtitle for this document"
+    )
+    category = models.CharField(
+        max_length=100,
+        default='general',
+        blank=True,
+        verbose_name="Category / Key",
+        help_text="Filter key/category to identify where this download belongs (e.g. 'general', 'reports', 'circulars'). Default is 'general'."
+    )
+    document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text="Upload/Select the PDF/Document file to download"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    panels = [
+        FieldPanel('title'),
+        FieldPanel('subtitle'),
+        FieldPanel('category'),
+        FieldPanel('document'),
+    ]
+
+    def __str__(self):
+        return f"{self.title} ({self.category})" if self.category else self.title
+
+    class Meta:
+        verbose_name = "Download"
+        verbose_name_plural = "Downloads"
+
+
+class DownloadsPage(Page):
+    body = StreamField(PAGE_BUILDER_BLOCKS, blank=True, use_json_field=True)
+    category_filter = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name="Category / Key Filter",
+        help_text="Optional category key to filter downloads. If left blank, it automatically matches downloads matching this page's title or slug (e.g. 'Guidelines'). Type 'all' to show every download."
+    )
+    custom_css = models.TextField(blank=True, verbose_name="Page Global Custom CSS", help_text="Write custom CSS styles specific to this page.")
+    custom_js = models.TextField(blank=True, verbose_name="Page Global Custom JS", help_text="Write custom JavaScript specific to this page.")
+
+    content_panels = Page.content_panels + [
+        FieldPanel('category_filter'),
+        FieldPanel('body'),
+    ]
+
+    settings_panels = Page.settings_panels + [
+        FieldPanel('custom_css'),
+        FieldPanel('custom_js'),
+    ]
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        all_downloads = list(Download.objects.all().order_by('-created_at'))
+        
+        cat_filter = (self.category_filter or '').strip()
+        
+        if cat_filter.lower() == 'all':
+            context['downloads'] = all_downloads
+            return context
+
+        import re
+        def is_match(target, candidate):
+            if not target or not candidate:
+                return False
+            a = re.sub(r'[^a-z0-9]', '', str(target).lower())
+            b = re.sub(r'[^a-z0-9]', '', str(candidate).lower())
+            if not a or not b:
+                return False
+            if a == b or a in b or b in a:
+                return True
+            if len(a) >= 4 and len(b) >= 4 and a[:4] == b[:4]:
+                return True
+            return False
+
+        matched = []
+        if cat_filter:
+            # 1. Match against explicit category_filter if provided
+            matched = [d for d in all_downloads if is_match(cat_filter, d.category)]
+
+        if not matched:
+            # 2. Automatically match against page title or page slug
+            matched = [d for d in all_downloads if is_match(self.title, d.category) or is_match(self.slug, d.category)]
+
+        if not matched and (not cat_filter or cat_filter.lower() == 'general'):
+            # 3. Fallback to general items or all items for general Downloads pages
+            general_items = [d for d in all_downloads if is_match('general', d.category)]
+            matched = general_items if general_items else all_downloads
+
+        context['downloads'] = matched
+        return context
+
