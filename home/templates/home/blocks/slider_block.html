@@ -1,25 +1,44 @@
 {% load wagtailimages_tags home_tags %}
 {% unique_id as block_id %}
 
-{% if self.style.custom_css %}
 <style>
+    #carousel-{{ block_id }} .carousel-control-prev,
+    #carousel-{{ block_id }} .carousel-control-next {
+        width: 44px;
+        height: 44px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.55);
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        opacity: 0.85;
+        transition: all 0.25s ease;
+        margin: 0 12px;
+    }
+    #carousel-{{ block_id }} .carousel-control-prev:hover,
+    #carousel-{{ block_id }} .carousel-control-next:hover {
+        background-color: var(--theme-secondary, #f39c12);
+        border-color: var(--theme-secondary, #f39c12);
+        opacity: 1;
+        transform: translateY(-50%) scale(1.08);
+    }
+    #carousel-{{ block_id }} .carousel-control-prev-icon,
+    #carousel-{{ block_id }} .carousel-control-next-icon {
+        width: 18px;
+        height: 18px;
+    }
+    {% if self.style.custom_css %}
     #block-{{ block_id }} {
         {{ self.style.custom_css|safe }}
     }
+    {% endif %}
 </style>
-{% endif %}
 
 <div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
     {% if not is_side_by_side %}
     <div class="{{ self.container_width|default:'container-fluid' }}">
     {% endif %}
-        <div id="carousel-{{ block_id }}" class="carousel slide shadow rounded" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                {% for slide in self.slides %}
-                    <button type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}"></button>
-                {% endfor %}
-            </div>
-            
+        <div id="carousel-{{ block_id }}" class="carousel slide shadow rounded position-relative" data-bs-ride="carousel">
             <div class="carousel-inner rounded">
                 {% for slide in self.slides %}
                     {% image slide.image fill-1200x500 as img %}
@@ -35,7 +54,7 @@
                         {% if slide.title or slide.subtitle %}
                             <div class="carousel-caption d-none d-md-block" style="background: rgba(0, 51, 102, 0.75); border-radius: 8px; padding: 1.5rem;">
                                 {% if slide.title %}
-                                    <h5 class="fw-bold text-warning">{{ slide.title }}</h5>
+                                    <h2 class="h5 fw-bold text-warning">{{ slide.title }}</h2>
                                 {% endif %}
                                 {% if slide.subtitle %}
                                     <p class="mb-0 text-white-50">{{ slide.subtitle }}</p>
@@ -46,11 +65,11 @@
                 {% endfor %}
             </div>
             
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="prev" aria-label="Previous Slide">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ block_id }}" data-bs-slide="next" aria-label="Next Slide">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>

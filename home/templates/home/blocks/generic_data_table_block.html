@@ -1,0 +1,129 @@
+{% load wagtailcore_tags %}
+
+<div class="container">
+<div id="block-{{ block_id }}" class="generic-table-block {{ self.margin_top }} {{ self.margin_bottom }} {{ self.padding_top }} {{ self.padding_bottom }} {{ self.custom_class }}">
+    {% if self.custom_css %}
+    <style>
+        #block-{{ block_id }} {
+            {{ self.custom_css|safe }}
+        }
+    </style>
+    {% endif %}
+
+    <div class="card shadow-sm mb-4" style="border: 1px solid var(--theme-secondary, #f39c12); border-radius: 8px; overflow: hidden;">
+        {% if self.table_title %}
+        <div class="card-header bg-gov-saffron text-dark fw-bold d-flex justify-content-between align-items-center py-3" style="background-color: var(--theme-card-header-bg, #f39c12); border-bottom: 2px solid var(--theme-btn-border, #d38307);">
+            <div>
+                <h2 class="h5 mb-0 fw-bold" style="color: var(--theme-card-header-text, #000000);"><i class="bi bi-table me-2"></i>{{ self.table_title }}</h2>
+                {% if self.table_subtitle %}
+                    <small style="color: var(--theme-card-header-text, #374151); opacity: 0.85;">{{ self.table_subtitle }}</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                {% if self.columns or self.show_serial_no or has_attachments or self.show_row_totals %}
+                <thead class="table-gov-header">
+                    <tr style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000);">
+                        {% if self.show_serial_no %}
+                            <th scope="col" class="py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 50px;">#</th>
+                        {% endif %}
+                        {% for col in self.columns %}
+                            <th scope="col" class="py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307);">{{ col }}</th>
+                        {% endfor %}
+                        {% if self.show_row_totals %}
+                            <th scope="col" class="text-end py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); min-width: 110px;">
+                                {{ self.row_total_label|default:'Total' }}
+                            </th>
+                        {% endif %}
+                        {% if has_attachments %}
+                            <th scope="col" class="text-end py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 200px;">Action / File</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                {% endif %}
+                <tbody>
+                    {% for row in processed_rows %}
+                        <tr>
+                            {% if self.show_serial_no %}
+                                <td class="px-3 py-2 fw-semibold text-muted">{{ forloop.counter }}</td>
+                            {% endif %}
+                            {% for cell in row.cell_values %}
+                                <td class="px-3 py-2">
+                                    {% if "@" in cell and "." in cell and not " " in cell %}
+                                        <a href="mailto:{{ cell }}" class="text-decoration-none text-primary fw-semibold">
+                                            <i class="bi bi-envelope-fill me-1"></i>{{ cell }}
+                                        </a>
+                                    {% elif "http://" in cell or "https://" in cell or "www." in cell %}
+                                        <a href="{{ cell }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-dark px-2 py-1" style="font-size: 0.8rem;">
+                                            <i class="bi bi-box-arrow-up-right me-1"></i>Visit Link
+                                        </a>
+                                    {% else %}
+                                        {{ cell }}
+                                    {% endif %}
+                                    {% if forloop.first and row.badge_text %}
+                                        <span class="badge bg-{{ row.badge_color|default:'danger' }} ms-2">{{ row.badge_text }}</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            {% if self.show_row_totals %}
+                                <td class="text-end px-3 py-2 fw-bold text-dark" style="background-color: rgba(0, 43, 102, 0.03);">
+                                    {{ row.row_total }}
+                                </td>
+                            {% endif %}
+                            {% if has_attachments %}
+                                <td class="text-end px-3 py-2">
+                                    {% if row.attachment %}
+                                        <a href="{{ row.attachment.url }}" class="btn btn-sm btn-gov fw-bold text-dark px-3 py-2" style="background-color: #f39c12; color: #000000; border: 1px solid #d38307;" target="_blank">
+                                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> View / Download
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="20" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
+                                No records found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% if self.show_column_totals and processed_rows %}
+                <tfoot class="fw-bold" style="background-color: #f8fafc; border-top: 2px solid var(--theme-primary, #002b66);">
+                    <tr class="table-light">
+                        {% if self.show_serial_no %}
+                            <td class="px-3 py-2"></td>
+                        {% endif %}
+                        {% for col_tot in column_totals %}
+                            <td class="px-3 py-2 {% if col_tot or forloop.first %}fw-bold text-dark{% else %}text-muted{% endif %}">
+                                {% if forloop.first and not col_tot %}
+                                    {{ self.column_total_label|default:'Total' }}
+                                {% elif col_tot %}
+                                    {{ col_tot }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        {% if self.show_row_totals %}
+                            <td class="text-end px-3 py-2 fw-bolder text-primary fs-6" style="background-color: rgba(0, 43, 102, 0.08); border-left: 2px solid var(--theme-primary, #002b66);">
+                                {{ grand_total }}
+                            </td>
+                        {% endif %}
+                        {% if has_attachments %}
+                            <td class="px-3 py-2"></td>
+                        {% endif %}
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+</div>

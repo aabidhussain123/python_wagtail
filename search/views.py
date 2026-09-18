@@ -1,46 +1,70 @@
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.template.response import TemplateResponse
-
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from wagtail.models import Page
 
-# To enable logging of search queries for use with the "Promoted search results" module
-# <https://docs.wagtail.org/en/stable/reference/contrib/searchpromotions.html>
-# uncomment the following line and the lines indicated in the search function
-# (after adding wagtail.contrib.search_promotions to INSTALLED_APPS):
 
-# from wagtail.contrib.search_promotions.models import Query
+def quick_search(request):
+    """
+    Live autocomplete search API for the header search bar.
+    Returns JSON list of matching pages.
+    """
+    q = (request.GET.get("q") or request.GET.get("query") or "").strip()
+    if not q:
+        return JsonResponse({"results": []})
+
+    live_pages = Page.objects.live().public().exclude(depth__lte=2)
+
+    # 1. Exact/Substring title matches
+    title_matches = list(live_pages.filter(title__icontains=q)[:8])
+    seen_ids = set(p.id for p in title_matches)
+
+    # 2. Wagtail search for body/content matches
+    try:
+        wagtail_matches = [p for p in live_pages.search(q)[:8] if p.id not in seen_ids]
+    except Exception:
+        wagtail_matches = []
+
+    combined = (title_matches + wagtail_matches)[:8]
+
+    results = []
+    for p in combined:
+        try:
+            url = p.url
+        except Exception:
+            url = f"/{p.slug}/"
+        results.append({
+            "id": p.id,
+            "title": p.title,
+            "url": url,
+            "type": p.specific_class.__name__ if hasattr(p, "specific_class") and p.specific_class else "Page",
+        })
+
+    return JsonResponse({"results": results})
 
 
 def search(request):
-    search_query = request.GET.get("query", None)
-    page = request.GET.get("page", 1)
-
-    # Search
+    """
+    Direct navigation search:
+    If a query is submitted, immediately redirects the user to the matching page.
+    """
+    search_query = (request.GET.get("query") or "").strip()
     if search_query:
-        search_results = Page.objects.live().search(search_query)
+        # 1. Check exact title match
+        exact = Page.objects.live().public().exclude(depth__lte=2).filter(title__iexact=search_query).first()
+        if exact:
+            return redirect(exact.url)
 
-        # To log this query for use with the "Promoted search results" module:
+        # 2. Check substring title match
+        sub_match = Page.objects.live().public().exclude(depth__lte=2).filter(title__icontains=search_query).first()
+        if sub_match:
+            return redirect(sub_match.url)
 
-        # query = Query.get(search_query)
-        # query.add_hit()
+        # 3. Wagtail full-text search top result
+        try:
+            top_match = Page.objects.live().public().exclude(depth__lte=2).search(search_query).first()
+            if top_match:
+                return redirect(top_match.url)
+        except Exception:
+            pass
 
-    else:
-        search_results = Page.objects.none()
-
-    # Pagination
-    paginator = Paginator(search_results, 10)
-    try:
-        search_results = paginator.page(page)
-    except PageNotAnInteger:
-        search_results = paginator.page(1)
-    except EmptyPage:
-        search_results = paginator.page(paginator.num_pages)
-
-    return TemplateResponse(
-        request,
-        "search/search.html",
-        {
-            "search_query": search_query,
-            "search_results": search_results,
-        },
-    )
+    return redirect("/")

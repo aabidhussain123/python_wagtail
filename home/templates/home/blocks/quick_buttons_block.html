@@ -16,10 +16,10 @@
         justify-content: center;
         min-width: 180px;
         padding: 12px 24px;
-        background: #f39c12;
-        border: 1px solid #d38307;
+        background: var(--theme-btn-bg, #f39c12);
+        border: 1px solid var(--theme-btn-border, #d38307);
         border-radius: 6px;
-        color: #000000;
+        color: var(--theme-btn-text, #000000);
         font-weight: 700;
         font-size: 1.05rem;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
@@ -28,12 +28,12 @@
         text-align: center;
     }
     #block-{{ block_id }} .quick-button-link:hover {
-        background: #002b66;
-        border-color: #002b66;
-        color: #ffffff;
+        background: var(--theme-primary, #002b66) !important;
+        border-color: var(--theme-primary, #002b66) !important;
+        color: #ffffff !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        text-decoration: underline;
+        text-decoration: none;
     }
     @media (max-width: 575.98px) {
         #block-{{ block_id }} .quick-button-link {
@@ -48,7 +48,7 @@
 <div id="block-{{ block_id }}" class="quick-buttons-section {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
     <div class="container py-3">
         {% if self.title %}
-            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4 text-center">{{ self.title }}</h3>
+            <h2 class="h2 fw-bold text-dark border-bottom pb-2 mb-4 text-center">{{ self.title }}</h2>
         {% endif %}
         
         <div class="d-flex flex-wrap justify-content-center gap-3 gap-md-4 py-2">

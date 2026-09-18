@@ -12,7 +12,7 @@
 <div id="block-{{ block_id }}" class="{{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
     <div class="container py-2">
         {% if self.title %}
-            <h3 class="h2 fw-bold text-dark border-bottom pb-2 mb-4">{{ self.title }}</h3>
+            <h2 class="h2 fw-bold text-dark border-bottom pb-2 mb-4">{{ self.title }}</h2>
         {% endif %}
         
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -32,11 +32,11 @@
                         
                         <div class="card-body">
                             <!-- Title -->
-                            <h5 class="card-title fw-bold">
+                            <h3 class="card-title h5 fw-bold">
                                 <a href="{% pageurl card.page %}" class="text-dark text-decoration-none">
                                     {{ card.custom_title|default:card.page.title }}
                                 </a>
-                            </h5>
+                            </h3>
                             
                             <!-- Description -->
                             <p class="card-text text-muted small">

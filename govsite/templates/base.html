@@ -60,6 +60,9 @@
             main {
                 flex: 1;
             }
+             #topbar{
+                 background-color: #f6f3ee !important;
+             }
             .gov-header {
                 background-color: #ffffff !important;
                 min-height: auto !important;
@@ -142,9 +145,9 @@
                     filter: invert(1);
                 }
                 .gov-custom-navbar .navbar-collapse {
-                    background-color: #fdfbf7;
+                    background-color: var(--theme-navbar-bg, #003366) !important;
                     padding: 12px;
-                    border-top: 2px solid #f39c12;
+                    border-top: 2px solid var(--theme-secondary, #f39c12);
                     margin-top: 8px;
                     border-radius: 4px;
                 }
@@ -200,11 +203,11 @@
                 }
             }
 
-            /* Custom Government Navbar Styling (Matching SFIO / Saffron & Navy Theme) */
+            /* Custom Government Navbar Styling */
             .gov-custom-navbar {
-                background-color: #fdfbf7 !important;
-                border-top: 1px solid #f39c12;
-                border-bottom: 1px solid #f39c12;
+                background-color: var(--theme-navbar-bg, #003366) !important;
+                border-top: 1px solid var(--theme-secondary, #f39c12);
+                border-bottom: 3px solid var(--theme-secondary, #f39c12);
                 padding: 0 !important;
             }
 
@@ -213,7 +216,7 @@
             }
 
             .gov-custom-navbar .navbar-nav .nav-link {
-                color: #1a1a1a !important;
+                color: var(--theme-navbar-text, #ffffff) !important;
                 font-weight: 600;
                 font-size: 0.95rem;
                 padding: 10px 18px !important;
@@ -224,15 +227,16 @@
             .gov-custom-navbar .navbar-nav .nav-item:hover > .nav-link,
             .gov-custom-navbar .navbar-nav .nav-item.active > .nav-link,
             .gov-custom-navbar .navbar-nav .nav-item.show > .nav-link {
-                background-color: #f39c12 !important;
-                color: #000000 !important;
+                background-color: var(--theme-navbar-hover-bg, #f39c12) !important;
+                color: var(--theme-navbar-hover-text, #000000) !important;
                 font-weight: 700;
             }
 
             /* Dropdown Menu Container */
             .gov-custom-navbar .dropdown-menu {
-                background-color: #f39c12 !important;
-                border: 1px solid #d38307 !important;
+                background-color: var(--theme-card-header-bg, #f39c12) !important;
+                border: 1px solid var(--theme-btn-border, #d38307) !important;
+                border-top: 3px solid var(--theme-secondary, #f39c12) !important;
                 border-radius: 0 !important;
                 padding: 0 !important;
                 margin-top: 0 !important;
@@ -242,11 +246,11 @@
 
             /* Dropdown Submenu Items */
             .gov-custom-navbar .dropdown-item {
-                color: #1a1a1a !important;
+                color: var(--theme-card-header-text, #000000) !important;
                 font-weight: 600;
                 font-size: 0.9rem;
                 padding: 10px 16px !important;
-                border-bottom: 1px solid #d38307 !important;
+                border-bottom: 1px solid var(--theme-btn-border, #d38307) !important;
                 white-space: normal;
                 transition: background-color 0.2s ease, color 0.2s ease;
             }
@@ -255,15 +259,14 @@
                 border-bottom: none !important;
             }
 
-            /* Active / Hovered Dropdown Item (Dark Blue Highlight with Underline) */
+            /* Active / Hovered Dropdown Item */
             .gov-custom-navbar .dropdown-item:hover,
             .gov-custom-navbar .dropdown-item:focus,
             .gov-custom-navbar .dropdown-item.active,
             .gov-custom-navbar .dropdown-submenu:hover > .dropdown-item {
-                background-color: #002b66 !important;
+                background-color: var(--theme-primary, #002b66) !important;
                 color: #ffffff !important;
                 font-weight: 700;
-                text-decoration: underline !important;
             }
 
             /* Caret icon adjustment */
@@ -272,9 +275,7 @@
                 vertical-align: middle;
             }
 
-            /* --- UNIFIED SAFFRON & NAVY THEME FOR ALL BUTTONS & TABLES ACROSS ALL PAGES --- */
-            
-            /* Global Table Headings across all pages */
+            /* Global Table Headings */
             table thead,
             table thead tr,
             table thead th,
@@ -282,25 +283,25 @@
             .table-dark th,
             .table-primary,
             .table-primary th {
-                background-color: #f39c12 !important;
-                color: #000000 !important;
+                background-color: var(--theme-table-header-bg, #f39c12) !important;
+                color: var(--theme-table-header-text, #000000) !important;
                 font-weight: 700 !important;
-                border-bottom: 2px solid #d38307 !important;
+                border-bottom: 2px solid var(--theme-btn-border, #d38307) !important;
             }
 
-            /* Global Buttons (Primary, Warning, Action Buttons, Quick Nav Buttons) */
+            /* Global Buttons */
             .btn-primary,
             .btn-warning,
             .btn-gov,
             .quick-button-link {
-                background-color: #f39c12 !important;
-                border-color: #d38307 !important;
-                color: #000000 !important;
+                background-color: var(--theme-btn-bg, #f39c12) !important;
+                border-color: var(--theme-btn-border, #d38307) !important;
+                color: var(--theme-btn-text, #000000) !important;
                 font-weight: 600 !important;
                 transition: all 0.2s ease !important;
             }
 
-            /* Hover state for all buttons: Deep Navy Blue (#002b66) with White bold text */
+            /* Hover state for all buttons */
             .btn-primary:hover,
             .btn-primary:focus,
             .btn-primary:active,
@@ -315,35 +316,25 @@
             .quick-button-link:active,
             .btn-outline-dark:hover,
             .btn-outline-primary:hover {
-                background-color: #002b66 !important;
-                border-color: #002b66 !important;
+                background-color: var(--theme-primary, #002b66) !important;
+                border-color: var(--theme-primary, #002b66) !important;
                 color: #ffffff !important;
-                text-decoration: underline !important;
-            }
-
-            /* Outlined Buttons Default State */
-            .btn-outline-primary,
-            .btn-outline-dark {
-                border-color: #f39c12 !important;
-                color: #1a1a1a !important;
-                font-weight: 600;
             }
 
             /* Table Action Buttons */
             .table .btn,
             .table a.btn {
-                background-color: #f39c12 !important;
-                border-color: #d38307 !important;
-                color: #000000 !important;
+                background-color: var(--theme-btn-bg, #f39c12) !important;
+                border-color: var(--theme-btn-border, #d38307) !important;
+                color: var(--theme-btn-text, #000000) !important;
                 font-weight: 600 !important;
             }
 
             .table .btn:hover,
             .table a.btn:hover {
-                background-color: #002b66 !important;
-                border-color: #002b66 !important;
+                background-color: var(--theme-primary, #002b66) !important;
+                border-color: var(--theme-primary, #002b66) !important;
                 color: #ffffff !important;
-                text-decoration: underline !important;
             }
         </style>
 
@@ -359,6 +350,123 @@
         </style>
         {% endif %}
 
+        {# WordPress-like Dynamic Theme CSS Variables & Preset Application (Loaded last to ensure full precedence) #}
+        {% get_theme_css %}
+
+        <style>
+            /* Header Theme Picker Styles */
+            .header-theme-switcher {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+            }
+            .header-theme-btn {
+                background: #ffffff;
+                border: 1px solid #ced4da;
+                border-radius: 20px;
+                padding: 2px 8px;
+                font-size: 0.78rem;
+                font-weight: 600;
+                color: #212529;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+            .header-theme-btn:hover, .header-theme-btn:focus {
+                background-color: #f8f9fa;
+                border-color: #adb5bd;
+                color: #000;
+            }
+            .header-theme-btn .theme-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                display: inline-block;
+                background-color: var(--theme-secondary, #f39c12);
+                border: 1px solid rgba(0,0,0,0.15);
+            }
+            .header-theme-dropdown {
+                display: none;
+                position: absolute;
+                top: calc(100% + 6px);
+                right: 0;
+                width: 260px;
+                background: #ffffff;
+                border: 1px solid rgba(0,0,0,0.15);
+                border-radius: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                z-index: 1060;
+                padding: 6px 0;
+                animation: themeFadeIn 0.15s ease-out;
+            }
+            @keyframes themeFadeIn {
+                from { opacity: 0; transform: translateY(-4px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .header-theme-dropdown.show {
+                display: block;
+            }
+            .header-theme-title {
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #6c757d;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 6px 14px 4px;
+                border-bottom: 1px solid #f1f3f5;
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .theme-option-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 7px 14px;
+                font-size: 0.82rem;
+                font-weight: 600;
+                color: #333333;
+                background: none;
+                border: none;
+                text-align: left;
+                cursor: pointer;
+                transition: background-color 0.15s ease;
+            }
+            .theme-option-item:hover {
+                background-color: #f8f9fa;
+                color: #000;
+            }
+            .theme-option-item.active {
+                background-color: #eef2ff;
+                color: #1e40af;
+                font-weight: 700;
+            }
+            .theme-swatch-circles {
+                display: inline-flex;
+                align-items: center;
+                gap: 2px;
+                margin-right: 8px;
+                vertical-align: middle;
+            }
+            .theme-swatch-circles span {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                display: inline-block;
+                border: 1px solid rgba(0,0,0,0.2);
+            }
+            .theme-option-check {
+                font-size: 0.85rem;
+                color: #1e40af;
+                font-weight: bold;
+            }
+        </style>
+
         {% block extra_css %}
         {% endblock %}
     </head>
@@ -367,17 +475,146 @@
         {% wagtailuserbar %}
 
         <!-- Government Top Bar -->
-        <div class="py-1 px-3 bg-dark text-light small d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <div>
-                <span class="me-2"><i class="bi bi-flag-fill text-warning"></i> Official Portal</span>
+        <div class="container py-1 px-3 small d-flex flex-wrap justify-content-between align-items-center gap-2" id="topbar">
+            <!-- Left Corner Quick Navigation Links -->
+            <div class="d-flex align-items-center flex-wrap gap-2 gap-md-3">
+               
+                {% if settings.home.HeaderFooterSettings.topbar_home_url %}
+                    <a href="{{ settings.home.HeaderFooterSettings.topbar_home_url }}" class="text-dark text-decoration-none hover-warning">
+                        <i class="bi bi-house-door-fill text-dark me-1"></i>{{ settings.home.HeaderFooterSettings.topbar_home_text|default:"Home" }}
+                    </a>
+                {% endif %}
+                {% if settings.home.HeaderFooterSettings.topbar_sitemap_url %}
+                    <a href="{{ settings.home.HeaderFooterSettings.topbar_sitemap_url }}" class="text-dark text-decoration-none hover-warning">
+                        <i class="bi bi-diagram-3-fill text-dark me-1"></i>{{ settings.home.HeaderFooterSettings.topbar_sitemap_text|default:"Sitemap" }}
+                    </a>
+                {% endif %}
+                {% if settings.home.HeaderFooterSettings.topbar_feedmap_url %}
+                    <a href="{{ settings.home.HeaderFooterSettings.topbar_feedmap_url }}" class="text-dark text-decoration-none hover-warning">
+                        <i class="bi bi-rss-fill text-dark me-1"></i>{{ settings.home.HeaderFooterSettings.topbar_feedmap_text|default:"Feedmap" }}
+                    </a>
+                {% endif %}
+                {% if settings.home.HeaderFooterSettings.topbar_feedback_url %}
+                    <a href="{{ settings.home.HeaderFooterSettings.topbar_feedback_url }}" class="text-dark text-decoration-none hover-warning">
+                        <i class="bi bi-chat-square-text-fill text-dark me-1"></i>{{ settings.home.HeaderFooterSettings.topbar_feedback_text|default:"Feedback" }}
+                    </a>
+                {% endif %}
             </div>
+
+            <!-- Center: Toll Free & Social Media Links -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                {% if settings.home.HeaderFooterSettings.topbar_tollfree %}
+                <div class="d-none d-md-flex align-items-center gap-1 text-dark fw-bold small">
+                    <i class="text-dark bi bi-telephone-outbound-fill me-1"></i> {{ settings.home.HeaderFooterSettings.topbar_tollfree }}
+                </div>
+                {% endif %}
+
+                <!-- Social Media Links (Top Header) -->
+                {% if settings.home.HeaderFooterSettings.facebook_url or settings.home.HeaderFooterSettings.twitter_url or settings.home.HeaderFooterSettings.youtube_url or settings.home.HeaderFooterSettings.instagram_url or settings.home.HeaderFooterSettings.linkedin_url %}
+                <div class="d-inline-flex align-items-center gap-2 social-header-links">
+                    {% if settings.home.HeaderFooterSettings.facebook_url %}
+                        <a href="{{ settings.home.HeaderFooterSettings.facebook_url }}" target="_blank" rel="noopener noreferrer" class="text-dark hover-warning" title="Facebook"><i class="bi bi-facebook"></i></a>
+                    {% endif %}
+                    {% if settings.home.HeaderFooterSettings.twitter_url %}
+                        <a href="{{ settings.home.HeaderFooterSettings.twitter_url }}" target="_blank" rel="noopener noreferrer" class="text-dark hover-warning" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                    {% endif %}
+                    {% if settings.home.HeaderFooterSettings.youtube_url %}
+                        <a href="{{ settings.home.HeaderFooterSettings.youtube_url }}" target="_blank" rel="noopener noreferrer" class="text-dark hover-warning" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    {% endif %}
+                    {% if settings.home.HeaderFooterSettings.instagram_url %}
+                        <a href="{{ settings.home.HeaderFooterSettings.instagram_url }}" target="_blank" rel="noopener noreferrer" class="text-dark hover-warning" title="Instagram"><i class="bi bi-instagram"></i></a>
+                    {% endif %}
+                    {% if settings.home.HeaderFooterSettings.linkedin_url %}
+                        <a href="{{ settings.home.HeaderFooterSettings.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="text-dark hover-warning" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right: Accessibility Controls & Theme Switcher -->
             <div class="d-flex align-items-center flex-wrap gap-2">
-                <a href="#main-content" class="text-light text-decoration-none me-2">Skip to main content</a>
+                <a href="#main-content" class="text-dark text-decoration-none me-2">Skip to main content</a>
                 <span class="text-secondary d-none d-sm-inline">|</span>
                 <div class="d-inline-flex align-items-center gap-1 ms-sm-2">
-                    <span class="badge bg-secondary" style="cursor: pointer;">A+</span>
-                    <span class="badge bg-secondary" style="cursor: pointer;">A</span>
-                    <span class="badge bg-secondary" style="cursor: pointer;">A-</span>
+                    <span class="badge bg-secondary" style="cursor: pointer;" onclick="document.body.style.fontSize='110%'">A+</span>
+                    <span class="badge bg-secondary" style="cursor: pointer;" onclick="document.body.style.fontSize='100%'">A</span>
+                    <span class="badge bg-secondary" style="cursor: pointer;" onclick="document.body.style.fontSize='90%'">A-</span>
+                </div>
+                <span class="text-secondary d-none d-sm-inline">|</span>
+
+                <!-- Theme Switcher -->
+                {% get_current_theme_key as current_theme %}
+                <div class="header-theme-switcher" id="portal-header-theme-picker">
+                    <button class="header-theme-btn" id="header-theme-btn" type="button" aria-expanded="false" title="Change Portal Theme">
+                        <i class="bi bi-palette-fill" style="color: var(--theme-secondary, #f39c12);"></i>
+                        <span>Theme</span>
+                        <i class="bi bi-chevron-down" style="font-size: 0.65rem;"></i>
+                    </button>
+                    <div class="header-theme-dropdown shadow" id="header-theme-menu">
+                        <div class="header-theme-title">
+                            <span><i class="bi bi-palette me-1"></i>Select Portal Theme</span>
+                        </div>
+                        <button type="button" class="theme-option-item {% if current_theme == 'saffron_navy' %}active{% endif %}" data-theme="saffron_navy">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #003366;"></span>
+                                    <span style="background-color: #f39c12;"></span>
+                                </span>
+                                <span>Saffron & Navy</span>
+                            </div>
+                            {% if current_theme == 'saffron_navy' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                        <button type="button" class="theme-option-item {% if current_theme == 'royal_blue' %}active{% endif %}" data-theme="royal_blue">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #1a237e;"></span>
+                                    <span style="background-color: #ffd600;"></span>
+                                </span>
+                                <span>Royal Blue & Gold</span>
+                            </div>
+                            {% if current_theme == 'royal_blue' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                        <button type="button" class="theme-option-item {% if current_theme == 'emerald_green' %}active{% endif %}" data-theme="emerald_green">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #1b5e20;"></span>
+                                    <span style="background-color: #4caf50;"></span>
+                                </span>
+                                <span>Emerald Green</span>
+                            </div>
+                            {% if current_theme == 'emerald_green' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                        <button type="button" class="theme-option-item {% if current_theme == 'digital_slate' %}active{% endif %}" data-theme="digital_slate">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #283593;"></span>
+                                    <span style="background-color: #00838f;"></span>
+                                </span>
+                                <span>Digital Indigo Teal</span>
+                            </div>
+                            {% if current_theme == 'digital_slate' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                        <button type="button" class="theme-option-item {% if current_theme == 'maroon_gold' %}active{% endif %}" data-theme="maroon_gold">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #880e4f;"></span>
+                                    <span style="background-color: #f9a825;"></span>
+                                </span>
+                                <span>Heritage Maroon</span>
+                            </div>
+                            {% if current_theme == 'maroon_gold' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                        <button type="button" class="theme-option-item {% if current_theme == 'clean_light' %}active{% endif %}" data-theme="clean_light">
+                            <div>
+                                <span class="theme-swatch-circles">
+                                    <span style="background-color: #455a64;"></span>
+                                    <span style="background-color: #607d8b;"></span>
+                                </span>
+                                <span>Clean Slate</span>
+                            </div>
+                            {% if current_theme == 'clean_light' %}<span class="theme-option-check"><i class="bi bi-check-lg"></i></span>{% endif %}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -386,29 +623,36 @@
         {% if settings.home.HeaderFooterSettings.custom_header_html %}
             {{ settings.home.HeaderFooterSettings.custom_header_html|safe }}
         {% else %}
-            <header class="gov-header py-2 shadow-sm">
-                <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-2">
-                    <div class="d-flex align-items-center text-center text-lg-start mb-1 mb-lg-0">
-                        <a href="/" class="d-inline-block text-decoration-none flex-shrink-0">
+            <header class="gov-header py-2 shadow-sm bg-white border-bottom">
+                <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
+                    <!-- Left: Logo & Multi-line Titles -->
+                    <div class="d-flex align-items-center text-center text-lg-start mb-2 mb-lg-0">
+                        <a href="/" class="d-inline-block text-decoration-none flex-shrink-0 me-3">
                             {% if settings.home.HeaderFooterSettings.logo %}
-                                {% image settings.home.HeaderFooterSettings.logo max-150x150 class="me-3" style="max-height: 60px; width: auto;" alt=settings.home.HeaderFooterSettings.site_title %}
+                                {% image settings.home.HeaderFooterSettings.logo max-200x200 class="img-fluid" style="max-height: 80px; width: auto; object-fit: contain;" alt=settings.home.HeaderFooterSettings.site_title %}
                             {% else %}
-                                <i class="bi bi-shield-shaded fs-2 me-3 text-warning"></i>
+                                <i class="bi bi-shield-shaded fs-1 text-warning"></i>
                             {% endif %}
                         </a>
-                        <div>
-                            {% if settings.home.HeaderFooterSettings.site_title_line_1 or settings.home.HeaderFooterSettings.site_title_line_2 or settings.home.HeaderFooterSettings.site_title_line_3 or settings.home.HeaderFooterSettings.site_title_line_4 %}
+                        <div class="header-titles">
+                            {% if settings.home.HeaderFooterSettings.site_title_line_1 or settings.home.HeaderFooterSettings.site_title_line_2 or settings.home.HeaderFooterSettings.site_title_line_3 or settings.home.HeaderFooterSettings.site_title_line_4 or settings.home.HeaderFooterSettings.site_title_line_5 or settings.home.HeaderFooterSettings.site_title_line_6 %}
                                 {% if settings.home.HeaderFooterSettings.site_title_line_1 %}
-                                    <div class="header-title-line-1 text-dark" style="font-size: 0.85rem; font-weight: 600; line-height: 1.2; color: #111827 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_1 }}</div>
+                                    <div class="header-title-line-1 text-dark" style="font-size: 0.95rem; font-weight: 600; line-height: 1.25; color: #111827 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_1 }}</div>
                                 {% endif %}
                                 {% if settings.home.HeaderFooterSettings.site_title_line_2 %}
-                                    <h1 class="h4 mb-0 fw-bold" style="font-size: 1.3rem; line-height: 1.15;"><a href="/" class="text-dark text-decoration-none" style="color: #000000 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_2 }}</a></h1>
+                                    <h1 class="h4 mb-0 fw-bold" style="font-size: 1.45rem; line-height: 1.18;"><a href="/" class="text-dark text-decoration-none" style="color: #000000 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_2 }}</a></h1>
                                 {% endif %}
                                 {% if settings.home.HeaderFooterSettings.site_title_line_3 %}
-                                    <div class="header-title-line-3 text-dark" style="font-size: 0.85rem; font-weight: 600; line-height: 1.2; color: #111827 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_3 }}</div>
+                                    <div class="header-title-line-3 text-dark" style="font-size: 0.95rem; font-weight: 600; line-height: 1.25; color: #111827 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_3 }}</div>
                                 {% endif %}
                                 {% if settings.home.HeaderFooterSettings.site_title_line_4 %}
-                                    <div class="header-title-line-4 text-secondary" style="font-size: 0.78rem; line-height: 1.2; margin-top: 1px; font-weight: 500; color: #374151 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_4 }}</div>
+                                    <div class="header-title-line-4 text-secondary" style="font-size: 0.82rem; line-height: 1.25; margin-top: 1px; font-weight: 500; color: #374151 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_4 }}</div>
+                                {% endif %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_5 %}
+                                    <div class="header-title-line-5 text-secondary" style="font-size: 0.82rem; line-height: 1.25; font-weight: 500; color: #374151 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_5 }}</div>
+                                {% endif %}
+                                {% if settings.home.HeaderFooterSettings.site_title_line_6 %}
+                                    <div class="header-title-line-6 text-secondary" style="font-size: 0.80rem; line-height: 1.25; font-weight: 500; color: #4b5563 !important;">{{ settings.home.HeaderFooterSettings.site_title_line_6 }}</div>
                                 {% endif %}
                             {% else %}
                                 <h1 class="h4 mb-0 fw-bold"><a href="/" class="text-dark text-decoration-none" style="color: #000000 !important;">{{ settings.home.HeaderFooterSettings.site_title }}</a></h1>
@@ -416,17 +660,31 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="d-flex flex-column flex-sm-row align-items-center gap-2 w-100 w-lg-auto justify-content-center justify-content-lg-end">
-                        {% if settings.home.HeaderFooterSettings.right_logo %}
-                            {% image settings.home.HeaderFooterSettings.right_logo max-150x150 style="max-height: 55px; width: auto;" alt="Right Site Logo" %}
-                        {% endif %}
-                        <!-- Search Bar in Header -->
-                        <form action="{% url 'search' %}" method="get" class="d-flex w-100 w-sm-auto" style="max-width: 280px;" role="search">
-                            <div class="input-group input-group-sm w-100">
-                                <input class="form-control" type="search" placeholder="Search Portal..." aria-label="Search" name="query" {% if search_query %} value="{{ search_query }}"{% endif %}>
-                                <button class="btn btn-warning" type="submit"><i class="bi bi-search"></i></button>
+
+                    <!-- Right Side: Search Input BEFORE Right Logo, then Right Logo on Far Right -->
+                    <div class="d-flex align-items-center gap-3 justify-content-between flex-wrap">
+                        {% if settings.home.HeaderFooterSettings.enable_header_search %}
+                        <!-- Functional Instant Quick-Search Bar -->
+                        <div class="position-relative" style="min-width: 240px; max-width: 320px;">
+                            <form id="header-search-form" action="{% url 'search' %}" method="get" class="d-flex" role="search" autocomplete="off">
+                                <div class="input-group">
+                                    <input id="header-search-input" class="form-control border-secondary border-opacity-50" type="search" placeholder="{{ settings.home.HeaderFooterSettings.header_search_placeholder|default:'Search pages, schemes...' }}" aria-label="Search" name="query" autocomplete="off" {% if search_query %} value="{{ search_query }}"{% endif %}>
+                                    <button class="btn btn-warning px-3" type="submit" style="background-color: #f39c12; border-color: #d38307; color: #000000;"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                            <!-- Live Suggestions Dropdown Popup -->
+                            <div id="header-search-dropdown" class="dropdown-menu shadow-lg w-100 p-0 mt-1 border-0" style="display: none; position: absolute; top: 100%; left: 0; z-index: 1050; max-height: 360px; overflow-y: auto; border-radius: 8px;">
+                                <div id="header-search-results-list" class="list-group list-group-flush rounded-3">
+                                </div>
                             </div>
-                        </form>
+                        </div>
+                        {% endif %}
+
+                        {% if settings.home.HeaderFooterSettings.right_logo %}
+                        <div class="flex-shrink-0">
+                            {% image settings.home.HeaderFooterSettings.right_logo max-200x200 style="max-height: 75px; width: auto; object-fit: contain;" alt="Government Emblem" %}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </header>
@@ -548,19 +806,31 @@
 
         <!-- Main Content Area -->
         <main id="main-content">
-            {% if page and page.depth > 3 %}
-                <div class="container pt-3">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0 bg-transparent p-0">
-                            {% for ancestor in page.get_ancestors %}
-                                {% if ancestor.depth > 2 %}
-                                    <li class="breadcrumb-item"><a href="{% pageurl ancestor %}" class="text-decoration-none">{{ ancestor.title }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                            <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
-                        </ol>
-                    </nav>
-                </div>
+            {% if page %}
+                {% get_breadcrumbs page as breadcrumbs %}
+                {% if breadcrumbs and breadcrumbs|length > 1 %}
+                    <div class="container pt-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 bg-transparent p-0">
+                                {% for crumb in breadcrumbs %}
+                                    {% if forloop.last %}
+                                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ crumb.title }}</li>
+                                    {% elif crumb.url %}
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ crumb.url }}" class="text-decoration-none">
+                                                {% if forloop.first %}<i class="bi bi-house-door-fill me-1"></i>{% endif %}{{ crumb.title }}
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="breadcrumb-item text-secondary fw-semibold">
+                                            {{ crumb.title }}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ol>
+                        </nav>
+                    </div>
+                {% endif %}
             {% endif %}
 
             {% block content %}{% endblock %}
@@ -577,18 +847,18 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6 mb-4 mb-md-0">
-                            <h5 class="text-white mb-3 fw-bold">
+                            <h2 class="h5 text-white mb-3 fw-bold">
                                 {% if settings.home.HeaderFooterSettings.logo %}
                                     {% image settings.home.HeaderFooterSettings.logo max-100x100 class="me-2" style="max-height: 30px; width: auto;" alt=settings.home.HeaderFooterSettings.footer_about_title %}
                                 {% else %}
                                     <i class="bi bi-shield-shaded text-warning me-2"></i>
                                 {% endif %}
                                 {{ settings.home.HeaderFooterSettings.footer_about_title }}
-                            </h5>
+                            </h2>
                             <p class="small text-white-50">{{ settings.home.HeaderFooterSettings.footer_about_text }}</p>
                         </div>
                         <div class="col-md-3 mb-4 mb-md-0">
-                            <h5 class="text-white mb-3">Quick Links</h5>
+                            <h2 class="h5 text-white mb-3">Quick Links</h2>
                             <ul class="list-unstyled small">
                                 <li class="mb-2"><a href="/news/">Latest News</a></li>
                                 <li class="mb-2"><a href="/notices/">Official Notices</a></li>
@@ -596,12 +866,34 @@
                             </ul>
                         </div>
                         <div class="col-md-3">
-                            <h5 class="text-white mb-3">Help & Support</h5>
+                            <h2 class="h5 text-white mb-3">Help & Support</h2>
                             <ul class="list-unstyled small text-white-50">
                                 <li class="mb-2"><i class="bi bi-geo-alt-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_address }}</li>
                                 <li class="mb-2"><i class="bi bi-envelope-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_email }}</li>
                                 <li class="mb-2"><i class="bi bi-telephone-fill me-2 text-warning"></i>{{ settings.home.HeaderFooterSettings.footer_phone }}</li>
                             </ul>
+                            {% if settings.home.HeaderFooterSettings.facebook_url or settings.home.HeaderFooterSettings.twitter_url or settings.home.HeaderFooterSettings.youtube_url or settings.home.HeaderFooterSettings.instagram_url or settings.home.HeaderFooterSettings.linkedin_url %}
+                            <div class="mt-3">
+                                <h3 class="h6 text-white fw-bold mb-2">Connect With Us</h3>
+                                <div class="d-flex align-items-center gap-3 fs-5">
+                                    {% if settings.home.HeaderFooterSettings.facebook_url %}
+                                        <a href="{{ settings.home.HeaderFooterSettings.facebook_url }}" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none hover-white" title="Facebook"><i class="bi bi-facebook"></i></a>
+                                    {% endif %}
+                                    {% if settings.home.HeaderFooterSettings.twitter_url %}
+                                        <a href="{{ settings.home.HeaderFooterSettings.twitter_url }}" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none hover-white" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+                                    {% endif %}
+                                    {% if settings.home.HeaderFooterSettings.youtube_url %}
+                                        <a href="{{ settings.home.HeaderFooterSettings.youtube_url }}" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none hover-white" title="YouTube"><i class="bi bi-youtube"></i></a>
+                                    {% endif %}
+                                    {% if settings.home.HeaderFooterSettings.instagram_url %}
+                                        <a href="{{ settings.home.HeaderFooterSettings.instagram_url }}" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none hover-white" title="Instagram"><i class="bi bi-instagram"></i></a>
+                                    {% endif %}
+                                    {% if settings.home.HeaderFooterSettings.linkedin_url %}
+                                        <a href="{{ settings.home.HeaderFooterSettings.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="text-warning text-decoration-none hover-white" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     <hr class="border-secondary my-4">
@@ -615,6 +907,181 @@
 
         {# Offline Local Bootstrap 5 JS Bundle #}
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+        <!-- Live Instant Search Navigation Script -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('header-search-input');
+            const searchForm = document.getElementById('header-search-form');
+            const dropdown = document.getElementById('header-search-dropdown');
+            const resultsList = document.getElementById('header-search-results-list');
+            
+            if (!searchInput || !dropdown || !resultsList) return;
+
+            let debounceTimer = null;
+            let currentResults = [];
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(debounceTimer);
+                
+                if (query.length < 2) {
+                    dropdown.style.display = 'none';
+                    resultsList.innerHTML = '';
+                    currentResults = [];
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`/api/quick-search/?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            currentResults = data.results || [];
+                            if (currentResults.length > 0) {
+                                let html = `<div class="dropdown-header text-uppercase fw-bold text-muted small px-3 py-2 bg-light border-bottom">Matching Pages (${currentResults.length})</div>`;
+                                currentResults.forEach(item => {
+                                    html += `
+                                        <a href="${item.url}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3 border-bottom text-decoration-none">
+                                            <div>
+                                                <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                                                <span class="fw-semibold text-dark">${item.title}</span>
+                                            </div>
+                                            <span class="badge bg-light text-muted border small ms-2" style="font-size: 0.72rem;">${item.type}</span>
+                                        </a>
+                                    `;
+                                });
+                                resultsList.innerHTML = html;
+                                dropdown.style.display = 'block';
+                            } else {
+                                resultsList.innerHTML = `
+                                    <div class="px-3 py-3 text-center text-muted small">
+                                        <i class="bi bi-search me-1"></i> No matching pages found
+                                    </div>
+                                `;
+                                dropdown.style.display = 'block';
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Search error:', err);
+                        });
+                }, 200);
+            });
+
+            // If user submits form directly or presses Enter
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    if (currentResults.length > 0) {
+                        e.preventDefault();
+                        window.location.href = currentResults[0].url;
+                    }
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+
+        // Interactive Header Theme Picker
+        (function() {
+            function initHeaderThemePicker() {
+                var picker = document.getElementById('portal-header-theme-picker');
+                if (!picker) return;
+
+                var toggleBtn = document.getElementById('header-theme-btn');
+                var menu = document.getElementById('header-theme-menu');
+                var options = picker.querySelectorAll('.theme-option-item');
+
+                function getCookie(name) {
+                    var value = '; ' + document.cookie;
+                    var parts = value.split('; ' + name + '=');
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                    return '';
+                }
+
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menu.classList.toggle('show');
+                    toggleBtn.setAttribute('aria-expanded', menu.classList.contains('show'));
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!picker.contains(e.target)) {
+                        menu.classList.remove('show');
+                        toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                options.forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var theme = btn.getAttribute('data-theme');
+                        if (!theme) return;
+
+                        // Immediately update active styling in dropdown
+                        options.forEach(function(o) {
+                            o.classList.remove('active');
+                            var chk = o.querySelector('.theme-option-check');
+                            if (chk) chk.remove();
+                        });
+                        btn.classList.add('active');
+                        var chkSpan = document.createElement('span');
+                        chkSpan.className = 'theme-option-check';
+                        chkSpan.innerHTML = '<i class="bi bi-check-lg"></i>';
+                        btn.appendChild(chkSpan);
+
+                        // Call backend to persist user preference in session and cookie
+                        fetch('/api/set-theme/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken') || ''
+                            },
+                            body: JSON.stringify({ theme: theme })
+                        })
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            if (data.ok && data.variables) {
+                                // Real-time update CSS custom properties on :root
+                                var vars = data.variables;
+                                var root = document.documentElement;
+                                if (vars.primary) root.style.setProperty('--theme-primary', vars.primary);
+                                if (vars.secondary) root.style.setProperty('--theme-secondary', vars.secondary);
+                                if (vars.navbar_bg) root.style.setProperty('--theme-navbar-bg', vars.navbar_bg);
+                                if (vars.navbar_text) root.style.setProperty('--theme-navbar-text', vars.navbar_text);
+                                if (vars.navbar_hover_bg) root.style.setProperty('--theme-navbar-hover-bg', vars.navbar_hover_bg);
+                                if (vars.navbar_hover_text) root.style.setProperty('--theme-navbar-hover-text', vars.navbar_hover_text);
+                                if (vars.card_header_bg) root.style.setProperty('--theme-card-header-bg', vars.card_header_bg);
+                                if (vars.card_header_text) root.style.setProperty('--theme-card-header-text', vars.card_header_text);
+                                if (vars.table_header_bg) root.style.setProperty('--theme-table-header-bg', vars.table_header_bg);
+                                if (vars.table_header_text) root.style.setProperty('--theme-table-header-text', vars.table_header_text);
+                                if (vars.btn_bg) root.style.setProperty('--theme-btn-bg', vars.btn_bg);
+                                if (vars.btn_text) root.style.setProperty('--theme-btn-text', vars.btn_text);
+                                if (vars.btn_border) root.style.setProperty('--theme-btn-border', vars.btn_border);
+                                if (vars.footer_bg) root.style.setProperty('--theme-footer-bg', vars.footer_bg);
+                            }
+                            menu.classList.remove('show');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        })
+                        .catch(function(err) {
+                            console.error('Error switching theme:', err);
+                            // Fallback reload if AJAX fail
+                            location.reload();
+                        });
+                    });
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initHeaderThemePicker);
+            } else {
+                initHeaderThemePicker();
+            }
+        })();
+        </script>
 
         {% if settings.home.HeaderFooterSettings.header_js %}
         <script>

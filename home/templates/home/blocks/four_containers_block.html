@@ -1,0 +1,116 @@
+{% load wagtailcore_tags home_tags %}
+{% unique_id as block_id %}
+
+{% if self.style.custom_css %}
+<style>
+    #block-{{ block_id }} {
+        {{ self.style.custom_css|safe }}
+    }
+</style>
+{% endif %}
+
+{% if self.custom_css %}
+<style>
+    {{ self.custom_css|safe }}
+</style>
+{% endif %}
+
+<style>
+    #block-{{ block_id }} .four-container-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        min-height: 120px;
+        padding: 1.5rem 1.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 6px 4px 10px -1px rgba(0, 0, 0, 0.08),
+            3px 2px 5px -1px rgba(0, 0, 0, 0.04);
+        text-decoration: none;
+        color: #1e293b;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    #block-{{ block_id }} .four-container-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -3px rgba(0, 43, 102, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: var(--theme-primary, #002b66);
+        color: var(--theme-primary, #002b66);
+        text-decoration: none;
+    }
+
+    #block-{{ block_id }} .four-container-box .box-title {
+        font-size: 1.08rem;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 0.75rem;
+        color: inherit;
+        transition: color 0.2s ease;
+    }
+
+    #block-{{ block_id }} .four-container-box .box-action {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: auto;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--theme-primary, #002b66);
+        gap: 0.35rem;
+        transition: transform 0.2s ease;
+    }
+
+    #block-{{ block_id }} .four-container-box:hover .box-action {
+        color: var(--gov-accent, #ff9933);
+        transform: translateX(4px);
+    }
+</style>
+
+<div id="block-{{ block_id }}" class="four-containers-section {{ self.style.custom_class }} {{ self.style.margin_top }} {{ self.style.margin_bottom }} {{ self.style.padding_top }} {{ self.style.padding_bottom }}">
+    <div class="container py-2">
+        {% if self.title %}
+            <h2 class="h2 fw-bold text-dark border-bottom pb-2 mb-4">{{ self.title }}</h2>
+        {% endif %}
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            {% for item in self.boxes %}
+                <div class="col">
+                    {% if item.link_page %}
+                        <a href="{% pageurl item.link_page %}" class="four-container-box" {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                    {% elif item.link_url %}
+                        <a href="{{ item.link_url }}" class="four-container-box" {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                    {% else %}
+                        <a href="#" class="four-container-box">
+                    {% endif %}
+                        <div class="box-title">
+                            {{ item.title }}
+                        </div>
+                        <div class="box-action">
+                            <span>Visit</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if self.custom_js %}
+<script>
+    (function() {
+        function init() {
+            {{ self.custom_js|safe }}
+        }
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init);
+        } else {
+            init();
+        }
+    })();
+</script>
+{% endif %}

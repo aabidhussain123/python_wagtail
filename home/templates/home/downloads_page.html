@@ -5,71 +5,71 @@
 {% stream_blocks_at page.body 'before_heading' %}
 
 <div class="container py-4">
-    <!-- <h1 class="display-6 fw-bold border-bottom pb-2 mb-4">{{ page.title }}</h1> -->
-
     {% stream_blocks_at page.body 'after_heading' %}
 
-    <h4 class="fw-bold mb-3"><i class="bi bi-download me-2 text-primary"></i>Available Downloads</h4>
-
-    {% if downloads %}
-        <div class="table-responsive shadow-sm rounded border bg-white">
+    <div class="card shadow-sm mb-4" style="border: 1px solid var(--theme-secondary, #f39c12); border-radius: 8px;">
+        <div class="card-header bg-gov-saffron text-dark fw-bold d-flex justify-content-between align-items-center py-3" style="background-color: var(--theme-card-header-bg, #f39c12); border-bottom: 2px solid var(--theme-btn-border, #d38307);">
+            <h2 class="h5 mb-0 fw-bold" style="color: var(--theme-card-header-text, #000000);">
+                <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>
+                {% if active_category %}
+                    {{ active_category|title }} Downloads
+                {% elif page.category_select %}
+                    {{ page.category_select|title }} Downloads
+                {% elif page.category_filter %}
+                    {{ page.category_filter|title }} Downloads
+                {% else %}
+                    {{ page.title }} Downloads
+                {% endif %}
+            </h2>
+            
+        </div>
+        <div class="table-responsive">
             <table class="table table-hover table-striped mb-0 align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col" style="width: 70%;">Title</th>
-                        <th scope="col" style="width: 30%;" class="text-end">Action</th>
+                <thead class="table-gov-header">
+                    <tr style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000);">
+                        <th scope="col" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 60px;">#</th>
+                        <th scope="col" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307);">Document Title & Details</th>
+                        <th scope="col" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 220px;" class="text-end">Download / View</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for dl in downloads %}
                         <tr>
-                            <td>
-                                <span class="fw-semibold text-dark d-block">{{ dl.title }}</span>
+                            <td class="px-3 py-2 fw-semibold text-muted">{{ forloop.counter }}</td>
+                            <td class="px-3 py-2">
+                                <span class="fw-bold text-dark d-block fs-6">{{ dl.title }}</span>
                                 {% if dl.subtitle %}
-                                    <small class="text-muted d-block mt-1">{{ dl.subtitle }}</small>
+                                    <small class="text-secondary d-block mt-1">{{ dl.subtitle }}</small>
                                 {% endif %}
                             </td>
-                            <td class="text-end">
+                            <td class="text-end px-3 py-2">
                                 {% if dl.document %}
-                                    <a href="{{ dl.document.url }}" class="btn btn-primary btn-sm px-3" target="_blank">
-                                        <i class="bi bi-file-earmark-arrow-down-fill me-1"></i>Download/View
+                                    <a href="{{ dl.document.url }}" class="btn btn-sm btn-gov fw-bold text-dark px-3 py-2" style="background-color: #f39c12; color: #000000; border: 1px solid #d38307;" target="_blank">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download / View
                                     </a>
                                 {% else %}
                                     <span class="text-muted small">No File Attached</span>
                                 {% endif %}
                             </td>
                         </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
+                                No downloads found{% if active_category %} for category "{{ active_category }}"{% elif page.category_select %} for category "{{ page.category_select }}"{% endif %}.
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-    {% else %}
-        <div class="alert alert-info shadow-sm" role="alert">
-            <i class="bi bi-info-circle-fill me-2"></i>No downloads are available at the moment. Please check back later.
-        </div>
-    {% endif %}
-</div>
+    </div>
 
-{% stream_blocks_at page.body 'after_main_content' %}
-{% stream_blocks_at page.body 'in_stream' %}
+    {% stream_blocks_at page.body 'after_main_content' %}
+    {% stream_blocks_at page.body 'in_stream' %}
+</div>
 {% endblock %}
 
 {% block above_footer %}
 {% stream_blocks_at page.body 'above_footer' %}
-{% endblock %}
-
-{% block extra_css %}
-    {% if page.custom_css %}
-        <style>
-            {{ page.custom_css|safe }}
-        </style>
-    {% endif %}
-{% endblock %}
-
-{% block extra_js %}
-    {% if page.custom_js %}
-        <script>
-            {{ page.custom_js|safe }}
-        </script>
-    {% endif %}
 {% endblock %}

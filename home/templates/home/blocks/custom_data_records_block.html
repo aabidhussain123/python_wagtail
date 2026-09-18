@@ -1,0 +1,115 @@
+{% load wagtailcore_tags %}
+<div class="container">
+
+<div id="block-{{ block_id }}" class="custom-data-records-block {{ self.margin_top }} {{ self.margin_bottom }} {{ self.padding_top }} {{ self.padding_bottom }} {{ self.custom_class }}">
+    {% if self.custom_css %}
+    <style>
+        #block-{{ block_id }} {
+            {{ self.custom_css|safe }}
+        }
+    </style>
+    {% endif %}
+
+    <div class="card shadow-sm mb-4" style="border: 1px solid var(--theme-secondary, #f39c12); border-radius: 8px;">
+        {% with title_text=self.section_title %}
+        <div class="card-header bg-gov-saffron text-dark fw-bold d-flex justify-content-between align-items-center py-3" style="background-color: var(--theme-card-header-bg, #f39c12); border-bottom: 2px solid var(--theme-btn-border, #d38307);">
+            <div>
+               
+                <h2 class="h5 mb-0 fw-bold" style="color: var(--theme-card-header-text, #000000);">
+                    <i class="bi bi-folder2-open me-2"></i>
+                    {% if title_text and title_text != "Custom Data Records" %}
+                        {{ title_text }}
+                    {% elif active_category %}
+                        {{ active_category|title }}
+                    {% elif self.category_select %}
+                        {{ self.category_select|title }}
+                    {% elif self.category_filter %}
+                        {{ self.category_filter|title }}
+                    {% elif records.0.category %}
+                        {{ records.0.category|title }}
+                    {% else %}
+                        Records
+                    {% endif %}
+                </h2>
+                {% if self.section_subtitle %}
+                    <small style="color: var(--theme-card-header-text, #374151); opacity: 0.85;">{{ self.section_subtitle }}</small>
+                {% endif %}
+            </div>
+           
+        </div>
+        {% endwith %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-gov-header">
+                    <tr style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000);">
+                        <th scope="col" class="py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 50px;">#</th>
+                        <th scope="col" class="py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307);">Title & Details</th>
+                        {% for col in columns %}
+                            <th scope="col" class="py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307);">{{ col }}</th>
+                        {% endfor %}
+                        <th scope="col" class="text-end py-2 px-3 fw-bold" style="background-color: var(--theme-table-header-bg, #f39c12); color: var(--theme-table-header-text, #000000); border-bottom: 2px solid var(--theme-btn-border, #d38307); width: 200px;">Document / File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in records %}
+                        <tr>
+                            <td class="px-3 py-2 fw-semibold text-muted">{{ forloop.counter }}</td>
+                            <td class="px-3 py-2">
+                                <div class="fw-bold text-dark fs-6">{{ rec.title }}</div>
+                                {% if rec.subtitle %}
+                                    <div class="small text-secondary">{{ rec.subtitle }}</div>
+                                {% endif %}
+                            </td>
+                            {% for cell in rec.dynamic_cells %}
+                                <td class="px-3 py-2">
+                                    {% if cell.value and cell.value != "—" %}
+                                        {% if cell.type == 'email' %}
+                                            <a href="mailto:{{ cell.value }}" class="text-decoration-none text-primary fw-semibold">
+                                                <i class="bi bi-envelope-fill me-1"></i>{{ cell.value }}
+                                            </a>
+                                        {% elif cell.type == 'url' %}
+                                            <a href="{{ cell.value }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-dark px-2 py-1" style="font-size: 0.8rem;">
+                                                <i class="bi bi-box-arrow-up-right me-1"></i>Visit Link
+                                            </a>
+                                        {% elif cell.type == 'phone' %}
+                                            <a href="tel:{{ cell.value }}" class="text-decoration-none text-dark fw-semibold">
+                                                <i class="bi bi-telephone-fill me-1 text-success"></i>{{ cell.value }}
+                                            </a>
+                                        {% elif cell.type == 'date' %}
+                                            <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.82rem;">
+                                                <i class="bi bi-calendar-event me-1 text-primary"></i>{{ cell.value }}
+                                            </span>
+                                        {% elif cell.type == 'number' %}
+                                            <span class="fw-bold text-dark">{{ cell.value }}</span>
+                                        {% else %}
+                                            <span class="text-dark">{{ cell.value }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            <td class="text-end px-3 py-2">
+                                {% if rec.document %}
+                                    <a href="{{ rec.document.url }}" class="btn btn-sm btn-gov fw-bold text-dark px-3 py-2" style="background-color: #f39c12; color: #000000; border: 1px solid #d38307;" target="_blank">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> View / Download
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="{{ columns|length|add:3 }}" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-1 text-muted"></i>
+                                No records found{% if active_category %} for category "{{ active_category }}"{% elif self.category_select %} for category "{{ self.category_select }}"{% elif self.category_filter %} for category "{{ self.category_filter }}"{% endif %}.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
